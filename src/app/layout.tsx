@@ -6,18 +6,42 @@ import { Metadata } from 'next'
 import { ThemeProvider } from '@/components/ThemeProvider'
 import ErrorBoundary from '@/components/ErrorBoundary'
 import SkipToContent from '@/components/SkipToContent'
+import { siteConfig } from '@/lib/constants/config'
 
 const inter = Inter({ subsets: ['latin'] })
 const mono = JetBrains_Mono({ subsets: ['latin'], variable: '--font-mono' })
 
 export const metadata: Metadata = {
-    title: 'Your Portfolio',
-    description: 'Your portfolio description',
-    viewport: 'width=device-width, initial-scale=1',
-    themeColor: [
-        { media: '(prefers-color-scheme: light)', color: 'white' },
-        { media: '(prefers-color-scheme: dark)', color: '#0a0a0a' },
-    ],
+    title: {
+        default: siteConfig.name,
+        template: `%s | ${siteConfig.name}`,
+    },
+    description: siteConfig.description,
+    openGraph: {
+        title: siteConfig.name,
+        description: siteConfig.description,
+        url: siteConfig.url,
+        siteName: siteConfig.name,
+        images: [{ url: siteConfig.ogImage }],
+        locale: 'en-US',
+        type: 'website',
+    },
+    robots: {
+        index: true,
+        follow: true,
+        googleBot: {
+            index: true,
+            follow: true,
+            'max-video-preview': -1,
+            'max-image-preview': 'large',
+            'max-snippet': -1,
+        },
+    },
+    icons: {
+        icon: '/favicon.ico',
+        shortcut: '/favicon-16x16.png',
+        apple: '/apple-touch-icon.png',
+    },
 }
 
 export default function RootLayout({
@@ -38,7 +62,9 @@ export default function RootLayout({
                 {/* Preload critical images */}
                 <link rel="preload" href="/hero-image.jpg" as="image" />
             </head>
-            <body className={`${inter.className} ${mono.variable}`}>
+            <body
+                className={`${inter.className} ${mono.variable} min-h-screen bg-white dark:bg-gray-900 antialiased`}
+            >
                 <ThemeProvider>
                     <ErrorBoundary>
                         <SkipToContent />
