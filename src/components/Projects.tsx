@@ -4,13 +4,14 @@ import { motion } from 'framer-motion'
 import Link from 'next/link'
 import Image from 'next/image'
 
+// List of your projects with their details
 const projects = [
     {
         title: 'Project One',
-        description: 'A brief description of the project and its key features.',
-        tags: ['React', 'TypeScript', 'Tailwind'],
-        image: 'https://images.unsplash.com/photo-1460925895917-afdab827c52f',
-        link: '/projects/1',
+        description: 'A brief description of the project',
+        tags: ['React', 'TypeScript', 'Tailwind'], // Technologies used
+        image: '/project1.jpg', // Project screenshot
+        link: '/projects/1', // Link to project details
     },
     {
         title: 'Project Two',

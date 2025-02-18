@@ -1,3 +1,6 @@
+// This is the main layout file that wraps all pages
+// Note: This file must be a Server Component to export metadata
+
 import { Inter, JetBrains_Mono } from 'next/font/google'
 import Header from '@/components/Header'
 import Footer from '@/components/Footer'
@@ -8,15 +11,23 @@ import ErrorBoundary from '@/components/ErrorBoundary'
 import SkipToContent from '@/components/SkipToContent'
 import { siteConfig } from '@/lib/constants/config'
 
-const inter = Inter({ subsets: ['latin'] })
-const mono = JetBrains_Mono({ subsets: ['latin'], variable: '--font-mono' })
+// Configure fonts
+const inter = Inter({ subsets: ['latin'] }) // Main font
+const mono = JetBrains_Mono({
+    subsets: ['latin'],
+    variable: '--font-mono', // Makes font available as CSS variable
+})
 
+// SEO and social sharing metadata
 export const metadata: Metadata = {
+    // Basic metadata
     title: {
-        default: siteConfig.name,
-        template: `%s | ${siteConfig.name}`,
+        default: siteConfig.name, // Default page title
+        template: `%s | ${siteConfig.name}`, // Template for other pages
     },
     description: siteConfig.description,
+
+    // Open Graph metadata (for social sharing)
     openGraph: {
         title: siteConfig.name,
         description: siteConfig.description,
@@ -26,9 +37,11 @@ export const metadata: Metadata = {
         locale: 'en-US',
         type: 'website',
     },
+
+    // Search engine instructions
     robots: {
-        index: true,
-        follow: true,
+        index: true, // Allow search engines to index
+        follow: true, // Allow following links
         googleBot: {
             index: true,
             follow: true,
@@ -37,6 +50,8 @@ export const metadata: Metadata = {
             'max-snippet': -1,
         },
     },
+
+    // Favicon and icons
     icons: {
         icon: '/favicon.ico',
         shortcut: '/favicon-16x16.png',
@@ -44,14 +59,16 @@ export const metadata: Metadata = {
     },
 }
 
+// Main layout component
 export default function RootLayout({
-    children,
+    children, // The page content
 }: {
     children: React.ReactNode
 }) {
     return (
         <html lang="en" suppressHydrationWarning>
             <head>
+                {/* Preload critical resources */}
                 <link
                     rel="preload"
                     href="/fonts/your-font.woff2"
@@ -59,18 +76,18 @@ export default function RootLayout({
                     type="font/woff2"
                     crossOrigin="anonymous"
                 />
-                {/* Preload critical images */}
                 <link rel="preload" href="/hero-image.jpg" as="image" />
             </head>
             <body
+                // Apply fonts and theme classes
                 className={`${inter.className} ${mono.variable} min-h-screen bg-white dark:bg-gray-900 antialiased`}
             >
                 <ThemeProvider>
                     <ErrorBoundary>
-                        <SkipToContent />
-                        <Header />
+                        <SkipToContent /> {/* Accessibility feature */}
+                        <Header /> {/* Navigation */}
                         <main id="main-content">{children}</main>
-                        <Footer />
+                        <Footer /> {/* Footer */}
                     </ErrorBoundary>
                 </ThemeProvider>
             </body>

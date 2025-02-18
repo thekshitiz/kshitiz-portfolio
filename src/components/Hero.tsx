@@ -17,8 +17,8 @@ export default function Hero() {
             {/* Background Image */}
             <div className="absolute inset-0 z-0">
                 <Image
-                    src="https://images.unsplash.com/photo-1451187580459-43490279c0fa"
-                    alt="Hero background"
+                    src="/hero-background.jpg"
+                    alt="Background"
                     fill
                     priority
                     className="object-cover object-center opacity-20 dark:opacity-10"
@@ -68,13 +68,13 @@ export default function Hero() {
                                 <TypeAnimation
                                     sequence={[
                                         'A Full Stack Developer',
-                                        1500,
+                                        2000,
                                         'A UI/UX Enthusiast',
-                                        1500,
+                                        2000,
                                         'A Problem Solver',
-                                        1500,
+                                        2000,
                                         'A Tech Innovator',
-                                        1500,
+                                        2000,
                                     ]}
                                     wrapper="h2"
                                     speed={50}

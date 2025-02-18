@@ -1,5 +1,15 @@
+// This is a Server Component
 import { Metadata } from 'next'
-import Link from 'next/link'
+import dynamic from 'next/dynamic'
+
+// Dynamically import the ResumeContent component with loading state
+const ResumeContent = dynamic(() => import('./ResumeContent'), {
+    loading: () => (
+        <div className="min-h-screen flex items-center justify-center bg-gray-50 dark:bg-gray-900">
+            <div className="animate-spin rounded-full h-32 w-32 border-t-2 border-b-2 border-gray-900 dark:border-white" />
+        </div>
+    ),
+})
 
 export const metadata: Metadata = {
     title: 'Resume | Kshitiz',
@@ -7,22 +17,5 @@ export const metadata: Metadata = {
 }
 
 export default function ResumePage() {
-    return (
-        <main className="pt-24 min-h-screen">
-            <div className="container mx-auto px-6">
-                <div className="flex justify-between items-center mb-8">
-                    <h1 className="text-4xl font-bold">Resume</h1>
-                    <a
-                        href="/resume.pdf"
-                        target="_blank"
-                        rel="noopener noreferrer"
-                        className="px-4 py-2 text-sm font-medium text-white bg-black dark:bg-white dark:text-black rounded-lg hover:opacity-90 transition-opacity"
-                    >
-                        Download PDF
-                    </a>
-                </div>
-                {/* Add your resume content here */}
-            </div>
-        </main>
-    )
+    return <ResumeContent />
 }
