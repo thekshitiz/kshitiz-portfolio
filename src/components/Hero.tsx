@@ -3,6 +3,7 @@
 import Link from 'next/link'
 import Image from 'next/image'
 import { motion } from 'framer-motion'
+import CircularText from './CircularText'
 
 export default function Hero() {
     return (
@@ -81,6 +82,8 @@ export default function Hero() {
                     </motion.div>
                 </div>
             </div>
+
+            <CircularText />
         </div>
     )
 } 
