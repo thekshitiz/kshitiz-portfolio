@@ -1,15 +1,29 @@
 /** @type {import('next').NextConfig} */
 const nextConfig = {
     images: {
-        domains: ['placeholder.com'], // Add any image domains you'll use
+        formats: ['image/avif', 'image/webp'],
+        deviceSizes: [640, 750, 828, 1080, 1200, 1920, 2048, 3840],
+        minimumCacheTTL: 60,
     },
     experimental: {
-        appDir: true,
+        optimizeCss: true,
+        optimizePackageImports: ['@heroicons/react', 'framer-motion'],
     },
-    webpack: (config) => {
-        config.resolve.fallback = {
-            ...config.resolve.fallback,
-            fs: false,
+    compiler: {
+        removeConsole: process.env.NODE_ENV === 'production',
+    },
+    poweredByHeader: false,
+    webpack: (config, { dev, isServer }) => {
+        if (!dev && !isServer) {
+            config.optimization.splitChunks.cacheGroups = {
+                ...config.optimization.splitChunks.cacheGroups,
+                styles: {
+                    name: 'styles',
+                    test: /\.(css|scss)$/,
+                    chunks: 'all',
+                    enforce: true,
+                },
+            }
         }
         return config
     },

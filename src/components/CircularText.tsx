@@ -13,11 +13,17 @@ const phrases = [
 
 export default function CircularText() {
     const circleRef = useRef<HTMLDivElement>(null)
-    const [currentPhrase] = useState(
-        phrases[Math.floor(Math.random() * phrases.length)]
-    )
+    const [mounted, setMounted] = useState(false)
+    const [currentPhrase, setCurrentPhrase] = useState(phrases[0])
 
     useEffect(() => {
+        setMounted(true)
+        setCurrentPhrase(phrases[Math.floor(Math.random() * phrases.length)])
+    }, [])
+
+    useEffect(() => {
+        if (!mounted || !circleRef.current) return
+
         const arrangeText = (
             text: string,
             element: HTMLDivElement,
@@ -41,13 +47,17 @@ export default function CircularText() {
                 .join('')
         }
 
-        if (circleRef.current) {
-            arrangeText(currentPhrase, circleRef.current, 240)
-        }
-    }, [currentPhrase])
+        arrangeText(currentPhrase, circleRef.current, 240)
+    }, [currentPhrase, mounted])
+
+    if (!mounted) return null
 
     return (
-        <div className="absolute right-[5%] top-[10%] z-50">
+        <div
+            className="absolute right-[5%] top-[10%] z-50"
+            aria-label="Rotating text animation"
+            role="presentation"
+        >
             <motion.div
                 initial={{ opacity: 0, scale: 0.8 }}
                 animate={{ opacity: 1, scale: 1 }}

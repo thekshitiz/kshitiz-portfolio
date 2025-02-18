@@ -7,7 +7,10 @@ import CircularText from './CircularText'
 
 export default function Hero() {
     return (
-        <div className="relative min-h-screen bg-gray-50 dark:bg-gray-900">
+        <div
+            id="home"
+            className="relative min-h-screen bg-gray-50 dark:bg-gray-900"
+        >
             {/* Background Image */}
             <div className="absolute inset-0 z-0">
                 <Image
@@ -28,14 +31,16 @@ export default function Hero() {
                         transition={{ duration: 0.8 }}
                     >
                         <h1 className="text-4xl tracking-tight font-extrabold text-gray-900 dark:text-white sm:text-5xl md:text-6xl">
-                            <span className="block xl:inline">Hi, I&apos;m</span>{' '}
+                            <span className="block xl:inline">
+                                Hi, I&apos;m
+                            </span>{' '}
                             <span className="block text-black dark:text-white xl:inline">
                                 Kshitiz
                             </span>
                         </h1>
                         <p className="mt-3 text-base text-gray-500 dark:text-gray-300 sm:mt-5 sm:text-lg sm:max-w-xl sm:mx-auto md:mt-5 md:text-xl lg:mx-0">
-                            A passionate full-stack developer crafting beautiful and
-                            functional digital experiences.
+                            A passionate full-stack developer crafting beautiful
+                            and functional digital experiences.
                         </p>
                         <div className="mt-8 sm:mt-12 flex flex-col sm:flex-row gap-4">
                             <Link
@@ -86,4 +91,4 @@ export default function Hero() {
             <CircularText />
         </div>
     )
-} 
+}
