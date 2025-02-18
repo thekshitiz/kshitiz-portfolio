@@ -98,7 +98,7 @@ export default function About() {
                             >
                                 <div className="relative aspect-square rounded-2xl overflow-hidden shadow-xl">
                                     <Image
-                                        src="/profile.jpg"
+                                        src="https://images.unsplash.com/photo-1506794778202-cad84cf45f1d"
                                         alt="Kshitiz - Full Stack Developer"
                                         fill
                                         className="object-cover"

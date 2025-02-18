@@ -9,7 +9,7 @@ const testimonials = [
     {
         name: 'John Doe',
         role: 'Digital Nomad',
-        image: '/testimonials/john.jpg',
+        image: 'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d',
         content:
             'Our development journey has been simply incredible. Kshitiz has shown to not only have top quality expertise in their work but also goes above and beyond in customer service!',
         rating: 5,
@@ -17,7 +17,7 @@ const testimonials = [
     {
         name: 'Sarah Smith',
         role: 'Tech Entrepreneur',
-        image: '/testimonials/sarah.jpg',
+        image: 'https://images.unsplash.com/photo-1494790108377-be9c29b29330',
         content:
             "Best decision I've ever made. After 2 years of collaboration, I still can't think of any technical improvements I might need. The solutions are comprehensive and future-proof.",
         rating: 5,
@@ -25,7 +25,7 @@ const testimonials = [
     {
         name: 'Michael Brown',
         role: 'Startup Founder',
-        image: '/testimonials/michael.jpg',
+        image: 'https://images.unsplash.com/photo-1472099645785-5658abf4ff4e',
         content:
             "Couldn't be happier with the results! You can tell that the architecture and features are well thought out and a lot of care was put into the development.",
         rating: 5,

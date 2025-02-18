@@ -9,8 +9,22 @@ const projects = [
         title: 'Project One',
         description: 'A brief description of the project and its key features.',
         tags: ['React', 'TypeScript', 'Tailwind'],
-        image: '/project1.jpg',
+        image: 'https://images.unsplash.com/photo-1460925895917-afdab827c52f',
         link: '/projects/1',
+    },
+    {
+        title: 'Project Two',
+        description: 'Another amazing project with cutting-edge technology.',
+        tags: ['Next.js', 'Node.js', 'MongoDB'],
+        image: 'https://images.unsplash.com/photo-1498050108023-c5249f4df085',
+        link: '/projects/2',
+    },
+    {
+        title: 'Project Three',
+        description: 'An innovative solution for modern problems.',
+        tags: ['React Native', 'Firebase', 'AWS'],
+        image: 'https://images.unsplash.com/photo-1555066931-4365d14bab8c',
+        link: '/projects/3',
     },
     // Add more projects...
 ]
