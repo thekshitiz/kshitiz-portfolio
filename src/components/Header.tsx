@@ -1,6 +1,6 @@
 'use client'
 
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useMemo } from 'react'
 import Link from 'next/link'
 import { usePathname } from 'next/navigation'
 import DarkModeToggle from './DarkModeToggle'
@@ -38,9 +38,9 @@ const navItems: NavItem[] = [
                 description: 'View my featured projects and case studies',
             },
             {
-                label: 'Portfolio',
-                href: '/#portfolio',
-                description: 'Explore my complete body of work',
+                label: 'Blog',
+                href: '/blog',
+                description: 'Read my thoughts and tutorials',
             },
         ],
     },
@@ -95,6 +95,77 @@ export default function Header() {
         setOpenDropdown(null)
     }
 
+    const memoizedNavItems = useMemo(
+        () =>
+            navItems.map((item) => (
+                <div key={item.label} className="relative">
+                    {item.dropdownItems ? (
+                        <>
+                            <button
+                                onClick={() =>
+                                    setOpenDropdown(
+                                        openDropdown === item.label
+                                            ? null
+                                            : item.label
+                                    )
+                                }
+                                className="flex items-center space-x-1 text-base font-medium text-gray-500 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white"
+                            >
+                                <span>{item.label}</span>
+                                <ChevronDownIcon className="h-4 w-4" />
+                            </button>
+                            <AnimatePresence>
+                                {openDropdown === item.label && (
+                                    <motion.div
+                                        initial={{ opacity: 0, y: 10 }}
+                                        animate={{ opacity: 1, y: 0 }}
+                                        exit={{ opacity: 0, y: 10 }}
+                                        className="absolute left-0 mt-2 w-64 rounded-lg bg-white dark:bg-gray-800 shadow-lg ring-1 ring-black ring-opacity-5"
+                                    >
+                                        <div className="p-2">
+                                            {item.dropdownItems.map(
+                                                (dropdownItem) => (
+                                                    <Link
+                                                        key={dropdownItem.label}
+                                                        href={dropdownItem.href}
+                                                        onClick={() =>
+                                                            setOpenDropdown(
+                                                                null
+                                                            )
+                                                        }
+                                                        className="block px-4 py-3 rounded-md hover:bg-gray-50 dark:hover:bg-gray-700"
+                                                    >
+                                                        <span className="block text-sm font-medium text-gray-900 dark:text-white">
+                                                            {dropdownItem.label}
+                                                        </span>
+                                                        {dropdownItem.description && (
+                                                            <span className="block mt-1 text-xs text-gray-500 dark:text-gray-400">
+                                                                {
+                                                                    dropdownItem.description
+                                                                }
+                                                            </span>
+                                                        )}
+                                                    </Link>
+                                                )
+                                            )}
+                                        </div>
+                                    </motion.div>
+                                )}
+                            </AnimatePresence>
+                        </>
+                    ) : (
+                        <button
+                            onClick={() => handleNavigation(item)}
+                            className="text-base font-medium text-gray-500 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white"
+                        >
+                            {item.label}
+                        </button>
+                    )}
+                </div>
+            )),
+        [pathname, openDropdown]
+    )
+
     return (
         <>
             <header className="border-b border-gray-200 dark:border-gray-700 sticky top-0 bg-white/80 dark:bg-gray-900/80 backdrop-blur-md z-10">
@@ -134,94 +205,7 @@ export default function Header() {
                                 </span>
                             </button>
 
-                            {/* Keep existing navItems mapping */}
-                            {navItems.map((item) => (
-                                <div key={item.label} className="relative">
-                                    {item.dropdownItems ? (
-                                        <>
-                                            <button
-                                                onClick={() =>
-                                                    setOpenDropdown(
-                                                        openDropdown ===
-                                                            item.label
-                                                            ? null
-                                                            : item.label
-                                                    )
-                                                }
-                                                className="flex items-center space-x-1 text-base font-medium text-gray-500 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white"
-                                            >
-                                                <span>{item.label}</span>
-                                                <ChevronDownIcon className="h-4 w-4" />
-                                            </button>
-                                            <AnimatePresence>
-                                                {openDropdown ===
-                                                    item.label && (
-                                                    <motion.div
-                                                        initial={{
-                                                            opacity: 0,
-                                                            y: 10,
-                                                        }}
-                                                        animate={{
-                                                            opacity: 1,
-                                                            y: 0,
-                                                        }}
-                                                        exit={{
-                                                            opacity: 0,
-                                                            y: 10,
-                                                        }}
-                                                        className="absolute left-0 mt-2 w-64 rounded-lg bg-white dark:bg-gray-800 shadow-lg ring-1 ring-black ring-opacity-5"
-                                                    >
-                                                        <div className="p-2">
-                                                            {item.dropdownItems.map(
-                                                                (
-                                                                    dropdownItem
-                                                                ) => (
-                                                                    <Link
-                                                                        key={
-                                                                            dropdownItem.label
-                                                                        }
-                                                                        href={
-                                                                            dropdownItem.href
-                                                                        }
-                                                                        onClick={() =>
-                                                                            setOpenDropdown(
-                                                                                null
-                                                                            )
-                                                                        }
-                                                                        className="block px-4 py-3 rounded-md hover:bg-gray-50 dark:hover:bg-gray-700"
-                                                                    >
-                                                                        <span className="block text-sm font-medium text-gray-900 dark:text-white">
-                                                                            {
-                                                                                dropdownItem.label
-                                                                            }
-                                                                        </span>
-                                                                        {dropdownItem.description && (
-                                                                            <span className="block mt-1 text-xs text-gray-500 dark:text-gray-400">
-                                                                                {
-                                                                                    dropdownItem.description
-                                                                                }
-                                                                            </span>
-                                                                        )}
-                                                                    </Link>
-                                                                )
-                                                            )}
-                                                        </div>
-                                                    </motion.div>
-                                                )}
-                                            </AnimatePresence>
-                                        </>
-                                    ) : (
-                                        <button
-                                            onClick={() =>
-                                                handleNavigation(item)
-                                            }
-                                            className="text-base font-medium text-gray-500 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white"
-                                        >
-                                            {item.label}
-                                        </button>
-                                    )}
-                                </div>
-                            ))}
+                            {memoizedNavItems}
                         </nav>
 
                         {/* Right Side Items */}

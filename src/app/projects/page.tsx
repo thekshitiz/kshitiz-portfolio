@@ -2,8 +2,6 @@
 
 import { useState, useMemo } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
-import Link from 'next/link'
-import Image from 'next/image'
 import { projects } from '@/lib/projects'
 import ProjectCard from '@/components/ProjectCard'
 
