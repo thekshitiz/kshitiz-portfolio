@@ -11,68 +11,27 @@ import {
 
 const testimonials = [
     {
-        id: 1,
+        name: 'John Doe',
+        role: 'CEO at TechCorp',
+        image: '/testimonials/john.jpg',
         content:
-            'Working with Kshitiz was an absolute pleasure. His technical expertise and attention to detail transformed our ideas into a stunning reality. The development process was smooth, and the end result exceeded our expectations.',
-        author: {
-            name: 'Sarah Johnson',
-            role: 'CTO',
-            company: 'TechCorp',
-            image: '/testimonials/sarah.jpg',
-            companyLogo: '/companies/techcorp.svg',
-        },
+            'Working with Kshitiz was an absolute pleasure. Their technical expertise and attention to detail resulted in an outstanding product.',
         rating: 5,
     },
     {
-        id: 2,
+        name: 'Sarah Smith',
+        role: 'Product Manager',
+        image: '/testimonials/sarah.jpg',
         content:
-            "Kshitiz's ability to understand our requirements and deliver high-quality solutions is remarkable. His expertise in modern web technologies helped us create a seamless user experience.",
-        author: {
-            name: 'Michael Chen',
-            role: 'Product Manager',
-            company: 'InnovateLabs',
-            image: '/testimonials/michael.jpg',
-            companyLogo: '/companies/innovatelabs.svg',
-        },
+            'Exceptional work! They not only delivered the project on time but also provided valuable insights throughout the development process.',
         rating: 5,
     },
     {
-        id: 3,
+        name: 'Michael Brown',
+        role: 'Startup Founder',
+        image: '/testimonials/michael.jpg',
         content:
-            'The attention to detail and commitment to quality is outstanding. Kshitiz not only delivered what we asked for but also suggested improvements that made our product even better.',
-        author: {
-            name: 'Emily Rodriguez',
-            role: 'Founder',
-            company: 'DesignStudio',
-            image: '/testimonials/emily.jpg',
-            companyLogo: '/companies/designstudio.svg',
-        },
-        rating: 5,
-    },
-    {
-        id: 4,
-        content:
-            'Exceptional problem-solving skills and a great communicator. Kshitiz helped us modernize our tech stack and implement best practices that significantly improved our development workflow.',
-        author: {
-            name: 'David Kim',
-            role: 'Lead Developer',
-            company: 'CodeCraft',
-            image: '/testimonials/david.jpg',
-            companyLogo: '/companies/codecraft.svg',
-        },
-        rating: 5,
-    },
-    {
-        id: 5,
-        content:
-            'A true professional who delivers results. His deep understanding of both frontend and backend technologies made him the perfect choice for our complex project requirements.',
-        author: {
-            name: 'Lisa Martinez',
-            role: 'Project Manager',
-            company: 'WebSolutions',
-            image: '/testimonials/lisa.jpg',
-            companyLogo: '/companies/websolutions.svg',
-        },
+            'Their ability to understand our requirements and translate them into a functional solution was impressive. Highly recommended!',
         rating: 5,
     },
 ]
@@ -102,11 +61,8 @@ export default function Testimonials() {
     }
 
     return (
-        <section
-            id="testimonials"
-            className="py-20 bg-gray-50 dark:bg-gray-900"
-        >
-            <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <section className="py-20 bg-white dark:bg-gray-900">
+            <div className="container mx-auto px-4">
                 <motion.div
                     initial={{ opacity: 0, y: 20 }}
                     whileInView={{ opacity: 1, y: 0 }}
@@ -114,145 +70,54 @@ export default function Testimonials() {
                     className="text-center mb-16"
                 >
                     <h2 className="text-4xl font-bold text-gray-900 dark:text-white mb-4">
-                        What Clients Say
+                        Client Testimonials
                     </h2>
-                    <p className="text-lg text-gray-600 dark:text-gray-300">
-                        Don&apos;t just take our word for it - hear from some of
-                        our satisfied clients
+                    <p className="text-lg text-gray-600 dark:text-gray-300 max-w-2xl mx-auto">
+                        Don't just take our word for it - hear what our clients
+                        have to say about our work.
                     </p>
                 </motion.div>
 
-                <div className="relative max-w-4xl mx-auto">
-                    {/* Carousel Navigation */}
-                    <div className="absolute top-1/2 -translate-y-1/2 left-0 right-0 flex justify-between z-10 px-4">
-                        <button
-                            onClick={handlePrevious}
-                            className="p-2 rounded-full bg-white/80 dark:bg-gray-800/80 shadow-lg hover:bg-white dark:hover:bg-gray-800 transition-colors"
-                            aria-label="Previous testimonial"
+                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+                    {testimonials.map((testimonial, index) => (
+                        <motion.div
+                            key={testimonial.name}
+                            initial={{ opacity: 0, y: 20 }}
+                            whileInView={{ opacity: 1, y: 0 }}
+                            transition={{ duration: 0.5, delay: index * 0.1 }}
+                            className="bg-gray-50 dark:bg-gray-800 p-8 rounded-2xl"
                         >
-                            <ChevronLeftIcon className="h-6 w-6 text-gray-600 dark:text-gray-300" />
-                        </button>
-                        <button
-                            onClick={handleNext}
-                            className="p-2 rounded-full bg-white/80 dark:bg-gray-800/80 shadow-lg hover:bg-white dark:hover:bg-gray-800 transition-colors"
-                            aria-label="Next testimonial"
-                        >
-                            <ChevronRightIcon className="h-6 w-6 text-gray-600 dark:text-gray-300" />
-                        </button>
-                    </div>
-
-                    {/* Testimonial Cards */}
-                    <div className="relative overflow-hidden">
-                        <AnimatePresence mode="wait">
-                            <motion.div
-                                key={currentIndex}
-                                initial={{ opacity: 0, x: 100 }}
-                                animate={{ opacity: 1, x: 0 }}
-                                exit={{ opacity: 0, x: -100 }}
-                                transition={{ duration: 0.5 }}
-                                className="bg-white dark:bg-gray-800 rounded-2xl shadow-xl p-8 relative"
-                            >
-                                {/* Quote Icon */}
-                                <div className="absolute -top-4 right-8">
-                                    <span className="text-6xl text-blue-500 opacity-20">
-                                        "
-                                    </span>
+                            <div className="flex items-center gap-4 mb-6">
+                                <div className="relative w-16 h-16 rounded-full overflow-hidden">
+                                    <Image
+                                        src={testimonial.image}
+                                        alt={testimonial.name}
+                                        fill
+                                        className="object-cover"
+                                    />
                                 </div>
-
-                                {/* Rating */}
-                                <div className="flex mb-4">
-                                    {[...Array(5)].map((_, i) => (
-                                        <StarIcon
-                                            key={i}
-                                            className={`h-5 w-5 ${
-                                                i <
-                                                testimonials[currentIndex]
-                                                    .rating
-                                                    ? 'text-yellow-400'
-                                                    : 'text-gray-300'
-                                            }`}
-                                        />
-                                    ))}
+                                <div>
+                                    <h3 className="text-lg font-semibold text-gray-900 dark:text-white">
+                                        {testimonial.name}
+                                    </h3>
+                                    <p className="text-sm text-gray-600 dark:text-gray-400">
+                                        {testimonial.role}
+                                    </p>
                                 </div>
-
-                                {/* Content */}
-                                <p className="text-gray-600 dark:text-gray-300 mb-6 text-lg">
-                                    {testimonials[currentIndex].content}
-                                </p>
-
-                                {/* Author Info */}
-                                <div className="flex items-center">
-                                    <div className="relative h-12 w-12 mr-4">
-                                        <Image
-                                            src={
-                                                testimonials[currentIndex]
-                                                    .author.image
-                                            }
-                                            alt={
-                                                testimonials[currentIndex]
-                                                    .author.name
-                                            }
-                                            fill
-                                            className="rounded-full object-cover"
-                                        />
-                                    </div>
-                                    <div>
-                                        <h4 className="font-semibold text-gray-900 dark:text-white">
-                                            {
-                                                testimonials[currentIndex]
-                                                    .author.name
-                                            }
-                                        </h4>
-                                        <p className="text-sm text-gray-500 dark:text-gray-400">
-                                            {
-                                                testimonials[currentIndex]
-                                                    .author.role
-                                            }{' '}
-                                            at{' '}
-                                            {
-                                                testimonials[currentIndex]
-                                                    .author.company
-                                            }
-                                        </p>
-                                    </div>
-                                    {/* Company Logo */}
-                                    <div className="ml-auto relative h-8 w-24">
-                                        <Image
-                                            src={
-                                                testimonials[currentIndex]
-                                                    .author.companyLogo
-                                            }
-                                            alt={
-                                                testimonials[currentIndex]
-                                                    .author.company
-                                            }
-                                            fill
-                                            className="object-contain dark:invert"
-                                        />
-                                    </div>
-                                </div>
-                            </motion.div>
-                        </AnimatePresence>
-                    </div>
-
-                    {/* Carousel Indicators */}
-                    <div className="flex justify-center mt-8 space-x-2">
-                        {testimonials.map((_, index) => (
-                            <button
-                                key={index}
-                                onClick={() => {
-                                    setAutoplay(false)
-                                    setCurrentIndex(index)
-                                }}
-                                className={`h-2 rounded-full transition-all ${
-                                    index === currentIndex
-                                        ? 'w-8 bg-blue-500'
-                                        : 'w-2 bg-gray-300 dark:bg-gray-700'
-                                }`}
-                                aria-label={`Go to testimonial ${index + 1}`}
-                            />
-                        ))}
-                    </div>
+                            </div>
+                            <div className="flex gap-1 mb-4">
+                                {[...Array(testimonial.rating)].map((_, i) => (
+                                    <StarIcon
+                                        key={i}
+                                        className="w-5 h-5 text-yellow-400"
+                                    />
+                                ))}
+                            </div>
+                            <p className="text-gray-600 dark:text-gray-300">
+                                "{testimonial.content}"
+                            </p>
+                        </motion.div>
+                    ))}
                 </div>
             </div>
         </section>

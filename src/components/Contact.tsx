@@ -9,22 +9,45 @@ import {
     UserIcon,
     ChatBubbleLeftRightIcon,
     PencilSquareIcon,
+    PaperAirplaneIcon,
+    ChevronDownIcon,
 } from '@heroicons/react/24/outline'
 
 // Predefined subject types for data analysis
 const subjectTypes = [
-    'Project Collaboration',
-    'Job Opportunity',
-    'Freelance Work',
-    'Technical Consultation',
-    'Code Review',
-    'Bug Report',
-    'Feature Request',
-    'General Inquiry',
-    'Other',
-] as const
+    {
+        label: 'Project Collaboration',
+        value: 'collaboration',
+        description: 'Discuss potential project partnerships',
+    },
+    {
+        label: 'Job Opportunity',
+        value: 'job',
+        description: 'Full-time positions or freelance work',
+    },
+    {
+        label: 'Technical Consultation',
+        value: 'consultation',
+        description: 'Get expert advice on technical matters',
+    },
+    {
+        label: 'Bug Report',
+        value: 'bug',
+        description: 'Report issues with existing projects',
+    },
+    {
+        label: 'Feature Request',
+        value: 'feature',
+        description: 'Suggest new features or improvements',
+    },
+    {
+        label: 'Other',
+        value: 'other',
+        description: 'Any other inquiries',
+    },
+]
 
-type SubjectType = (typeof subjectTypes)[number] | string
+type SubjectType = (typeof subjectTypes)[number]['value'] | string
 
 interface FormData {
     name: string
@@ -54,14 +77,14 @@ export default function Contact() {
                 ...formData,
                 // Use custom subject if "Other" is selected
                 subject:
-                    formData.subject === 'Other'
+                    formData.subject === 'other'
                         ? formData.customSubject
                         : formData.subject,
                 metadata: {
                     timestamp: new Date().toISOString(),
                     subjectCategory: formData.subject, // Original selection for analytics
                     customSubject:
-                        formData.subject === 'Other'
+                        formData.subject === 'other'
                             ? formData.customSubject
                             : null,
                 },
@@ -189,50 +212,63 @@ export default function Contact() {
                                                     subject: e.target.value,
                                                 })
                                             }
-                                            className="block w-full pl-10 pr-3 py-3 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:text-white appearance-none"
+                                            className="block w-full pl-10 pr-10 py-3 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:text-white appearance-none bg-white dark:bg-gray-800"
                                             required
                                         >
                                             <option value="">
                                                 Select a subject
                                             </option>
                                             {subjectTypes.map((type) => (
-                                                <option key={type} value={type}>
-                                                    {type}
+                                                <option
+                                                    key={type.value}
+                                                    value={type.value}
+                                                >
+                                                    {type.label}
                                                 </option>
                                             ))}
                                         </select>
                                         <div className="pointer-events-none absolute inset-y-0 right-0 flex items-center px-2 text-gray-700 dark:text-gray-300">
-                                            <svg
-                                                className="fill-current h-4 w-4"
-                                                xmlns="http://www.w3.org/2000/svg"
-                                                viewBox="0 0 20 20"
-                                            >
-                                                <path d="M9.293 12.95l.707.707L15.657 8l-1.414-1.414L10 10.828 5.757 6.586 4.343 8z" />
-                                            </svg>
+                                            <ChevronDownIcon className="h-5 w-5" />
                                         </div>
                                     </div>
+                                    {formData.subject && (
+                                        <p className="mt-2 text-sm text-gray-500 dark:text-gray-400">
+                                            {
+                                                subjectTypes.find(
+                                                    (type) =>
+                                                        type.value ===
+                                                        formData.subject
+                                                )?.description
+                                            }
+                                        </p>
+                                    )}
                                 </div>
-                                {formData.subject === 'Other' && (
+                                {formData.subject === 'other' && (
                                     <div className="mb-6">
                                         <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
                                             Specify Subject*
                                         </label>
-                                        <input
-                                            type="text"
-                                            value={formData.customSubject}
-                                            onChange={(e) =>
-                                                setFormData({
-                                                    ...formData,
-                                                    customSubject:
-                                                        e.target.value,
-                                                })
-                                            }
-                                            className="block w-full px-4 py-3 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:text-white"
-                                            placeholder="Please specify your subject"
-                                            required={
-                                                formData.subject === 'Other'
-                                            }
-                                        />
+                                        <div className="relative">
+                                            <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                                                <PencilSquareIcon className="h-5 w-5 text-gray-400" />
+                                            </div>
+                                            <input
+                                                type="text"
+                                                value={formData.customSubject}
+                                                onChange={(e) =>
+                                                    setFormData({
+                                                        ...formData,
+                                                        customSubject:
+                                                            e.target.value,
+                                                    })
+                                                }
+                                                className="block w-full pl-10 pr-3 py-3 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:text-white"
+                                                placeholder="Please specify your subject"
+                                                required={
+                                                    formData.subject === 'other'
+                                                }
+                                            />
+                                        </div>
                                     </div>
                                 )}
                                 <div>
@@ -266,11 +302,16 @@ export default function Contact() {
                                     whileTap={{ scale: 0.98 }}
                                     type="submit"
                                     disabled={isSubmitting}
-                                    className="w-full px-6 py-3 bg-black dark:bg-white text-white dark:text-black rounded-lg font-medium hover:bg-gray-900 dark:hover:bg-gray-100 transition-colors disabled:opacity-50"
+                                    className="w-full px-6 py-3 bg-black dark:bg-white text-white dark:text-black rounded-lg font-medium hover:bg-gray-900 dark:hover:bg-gray-100 transition-colors disabled:opacity-50 flex items-center justify-center gap-2"
                                 >
-                                    {isSubmitting
-                                        ? 'Sending...'
-                                        : 'Send Message'}
+                                    <span>
+                                        {isSubmitting
+                                            ? 'Sending...'
+                                            : 'Send Message'}
+                                    </span>
+                                    {!isSubmitting && (
+                                        <PaperAirplaneIcon className="h-5 w-5 transform rotate-90 -translate-y-px" />
+                                    )}
                                 </motion.button>
                             </form>
                         </motion.div>
