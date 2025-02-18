@@ -35,4 +35,4 @@ export function useCount(end: number, duration: number = 2) {
     }, [end, duration, isInView, hasAnimated])
 
     return { count, ref }
-} 
+}

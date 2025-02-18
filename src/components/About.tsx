@@ -48,7 +48,7 @@ const MetricCard = ({ number, label }: { number: string; label: string }) => {
     const isNumeric = !isNaN(parseInt(number))
     const numericValue = isNumeric ? parseInt(number) : 0
     const suffix = isNumeric ? number.replace(numericValue.toString(), '') : ''
-    
+
     const { count, ref } = useCount(numericValue)
 
     return (
@@ -63,12 +63,13 @@ const MetricCard = ({ number, label }: { number: string; label: string }) => {
             }}
             className="text-center"
         >
-            <motion.div 
+            <motion.div
                 className="text-4xl font-bold text-gray-900 dark:text-white mb-2"
                 whileInView={{ scale: [0.5, 1.2, 1] }}
                 transition={{ duration: 0.5, times: [0, 0.8, 1] }}
             >
-                {isNumeric ? count : number}{suffix}
+                {isNumeric ? count : number}
+                {suffix}
             </motion.div>
             <div className="text-gray-600 dark:text-gray-400">{label}</div>
         </motion.div>
