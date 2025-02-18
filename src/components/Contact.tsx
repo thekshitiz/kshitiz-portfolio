@@ -6,20 +6,40 @@ import {
     EnvelopeIcon,
     PhoneIcon,
     MapPinIcon,
+    UserIcon,
+    ChatBubbleLeftRightIcon,
+    PencilSquareIcon,
 } from '@heroicons/react/24/outline'
 
-interface ContactFormData {
+// Predefined subject types for data analysis
+const subjectTypes = [
+    'Project Collaboration',
+    'Job Opportunity',
+    'Freelance Work',
+    'Technical Consultation',
+    'Code Review',
+    'Bug Report',
+    'Feature Request',
+    'General Inquiry',
+    'Other',
+] as const
+
+type SubjectType = (typeof subjectTypes)[number] | string
+
+interface FormData {
     name: string
     email: string
-    enquiryType: 'general' | 'business' | 'support'
+    subject: SubjectType
+    customSubject: string
     message: string
 }
 
 export default function Contact() {
-    const [formData, setFormData] = useState<ContactFormData>({
+    const [formData, setFormData] = useState<FormData>({
         name: '',
         email: '',
-        enquiryType: 'general',
+        subject: '',
+        customSubject: '',
         message: '',
     })
 
@@ -28,9 +48,46 @@ export default function Contact() {
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault()
         setIsSubmitting(true)
-        // Add your form submission logic here
-        await new Promise((resolve) => setTimeout(resolve, 1000)) // Simulate API call
-        setIsSubmitting(false)
+
+        try {
+            const submissionData = {
+                ...formData,
+                // Use custom subject if "Other" is selected
+                subject:
+                    formData.subject === 'Other'
+                        ? formData.customSubject
+                        : formData.subject,
+                metadata: {
+                    timestamp: new Date().toISOString(),
+                    subjectCategory: formData.subject, // Original selection for analytics
+                    customSubject:
+                        formData.subject === 'Other'
+                            ? formData.customSubject
+                            : null,
+                },
+            }
+
+            const response = await fetch('/api/contact', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(submissionData),
+            })
+
+            if (!response.ok) throw new Error('Failed to send message')
+
+            setFormData({
+                name: '',
+                email: '',
+                subject: '',
+                customSubject: '',
+                message: '',
+            })
+            alert('Message sent successfully!')
+        } catch (error) {
+            alert('Failed to send message. Please try again.')
+        } finally {
+            setIsSubmitting(false)
+        }
     }
 
     return (
@@ -70,19 +127,24 @@ export default function Contact() {
                                 >
                                     Name
                                 </label>
-                                <input
-                                    type="text"
-                                    id="name"
-                                    value={formData.name}
-                                    onChange={(e) =>
-                                        setFormData({
-                                            ...formData,
-                                            name: e.target.value,
-                                        })
-                                    }
-                                    className="w-full px-4 py-3 rounded-lg border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-800 text-gray-900 dark:text-white focus:ring-2 focus:ring-black dark:focus:ring-white"
-                                    required
-                                />
+                                <div className="relative">
+                                    <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                                        <UserIcon className="h-5 w-5 text-gray-400" />
+                                    </div>
+                                    <input
+                                        type="text"
+                                        id="name"
+                                        value={formData.name}
+                                        onChange={(e) =>
+                                            setFormData({
+                                                ...formData,
+                                                name: e.target.value,
+                                            })
+                                        }
+                                        className="w-full pl-10 pr-3 py-3 rounded-lg border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-800 text-gray-900 dark:text-white focus:ring-2 focus:ring-black dark:focus:ring-white"
+                                        required
+                                    />
+                                </div>
                             </div>
                             <div>
                                 <label
@@ -91,48 +153,84 @@ export default function Contact() {
                                 >
                                     Email
                                 </label>
-                                <input
-                                    type="email"
-                                    id="email"
-                                    value={formData.email}
-                                    onChange={(e) =>
-                                        setFormData({
-                                            ...formData,
-                                            email: e.target.value,
-                                        })
-                                    }
-                                    className="w-full px-4 py-3 rounded-lg border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-800 text-gray-900 dark:text-white focus:ring-2 focus:ring-black dark:focus:ring-white"
-                                    required
-                                />
+                                <div className="relative">
+                                    <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                                        <EnvelopeIcon className="h-5 w-5 text-gray-400" />
+                                    </div>
+                                    <input
+                                        type="email"
+                                        id="email"
+                                        value={formData.email}
+                                        onChange={(e) =>
+                                            setFormData({
+                                                ...formData,
+                                                email: e.target.value,
+                                            })
+                                        }
+                                        className="w-full pl-10 pr-3 py-3 rounded-lg border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-800 text-gray-900 dark:text-white focus:ring-2 focus:ring-black dark:focus:ring-white"
+                                        required
+                                    />
+                                </div>
                             </div>
-                            <div>
-                                <label
-                                    htmlFor="enquiryType"
-                                    className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2"
-                                >
-                                    Enquiry Type
+                            <div className="mb-6">
+                                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                                    Subject*
                                 </label>
-                                <select
-                                    id="enquiryType"
-                                    value={formData.enquiryType}
-                                    onChange={(e) =>
-                                        setFormData({
-                                            ...formData,
-                                            enquiryType: e.target
-                                                .value as ContactFormData['enquiryType'],
-                                        })
-                                    }
-                                    className="w-full px-4 py-3 rounded-lg border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-800 text-gray-900 dark:text-white focus:ring-2 focus:ring-black dark:focus:ring-white"
-                                >
-                                    <option value="general">
-                                        General Inquiry
-                                    </option>
-                                    <option value="business">
-                                        Business Proposal
-                                    </option>
-                                    <option value="support">Support</option>
-                                </select>
+                                <div className="relative">
+                                    <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                                        <ChatBubbleLeftRightIcon className="h-5 w-5 text-gray-400" />
+                                    </div>
+                                    <select
+                                        value={formData.subject}
+                                        onChange={(e) =>
+                                            setFormData({
+                                                ...formData,
+                                                subject: e.target.value,
+                                            })
+                                        }
+                                        className="block w-full pl-10 pr-3 py-3 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:text-white appearance-none"
+                                        required
+                                    >
+                                        <option value="">
+                                            Select a subject
+                                        </option>
+                                        {subjectTypes.map((type) => (
+                                            <option key={type} value={type}>
+                                                {type}
+                                            </option>
+                                        ))}
+                                    </select>
+                                    <div className="pointer-events-none absolute inset-y-0 right-0 flex items-center px-2 text-gray-700 dark:text-gray-300">
+                                        <svg
+                                            className="fill-current h-4 w-4"
+                                            xmlns="http://www.w3.org/2000/svg"
+                                            viewBox="0 0 20 20"
+                                        >
+                                            <path d="M9.293 12.95l.707.707L15.657 8l-1.414-1.414L10 10.828 5.757 6.586 4.343 8z" />
+                                        </svg>
+                                    </div>
+                                </div>
                             </div>
+                            {formData.subject === 'Other' && (
+                                <div className="mb-6">
+                                    <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                                        Specify Subject*
+                                    </label>
+                                    <input
+                                        type="text"
+                                        value={formData.customSubject}
+                                        onChange={(e) =>
+                                            setFormData({
+                                                ...formData,
+                                                customSubject: e.target.value,
+                                            })
+                                        }
+                                        className="block w-full px-4 py-3 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:text-white"
+                                        placeholder="Please specify your subject"
+                                        required={formData.subject === 'Other'}
+                                    />
+                                </div>
+                            )}
                             <div>
                                 <label
                                     htmlFor="message"
@@ -140,19 +238,24 @@ export default function Contact() {
                                 >
                                     Message
                                 </label>
-                                <textarea
-                                    id="message"
-                                    value={formData.message}
-                                    onChange={(e) =>
-                                        setFormData({
-                                            ...formData,
-                                            message: e.target.value,
-                                        })
-                                    }
-                                    rows={4}
-                                    className="w-full px-4 py-3 rounded-lg border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-800 text-gray-900 dark:text-white focus:ring-2 focus:ring-black dark:focus:ring-white"
-                                    required
-                                />
+                                <div className="relative">
+                                    <div className="absolute top-3 left-3 pointer-events-none">
+                                        <PencilSquareIcon className="h-5 w-5 text-gray-400" />
+                                    </div>
+                                    <textarea
+                                        id="message"
+                                        value={formData.message}
+                                        onChange={(e) =>
+                                            setFormData({
+                                                ...formData,
+                                                message: e.target.value,
+                                            })
+                                        }
+                                        rows={4}
+                                        className="w-full pl-10 pr-3 py-3 rounded-lg border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-800 text-gray-900 dark:text-white focus:ring-2 focus:ring-black dark:focus:ring-white"
+                                        required
+                                    />
+                                </div>
                             </div>
                             <motion.button
                                 whileHover={{ scale: 1.02 }}
