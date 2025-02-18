@@ -4,6 +4,7 @@ import { motion } from 'framer-motion'
 import Image from 'next/image'
 import Link from 'next/link'
 import { ArrowRightIcon } from '@heroicons/react/24/outline'
+import { useCount } from '@/hooks/useCount'
 
 const aboutContent = {
     intro: `Hello! I'm Kshitiz, a Full Stack Developer with 3+ years of experience in web and mobile development. I specialize in building scalable web applications, responsive interfaces, and cross-platform mobile solutions using cutting-edge technologies like React, Next.js, Node.js, and React Native.`,
@@ -41,6 +42,37 @@ const aboutContent = {
             label: 'Open Source Contributions',
         },
     ],
+}
+
+const MetricCard = ({ number, label }: { number: string; label: string }) => {
+    const isNumeric = !isNaN(parseInt(number))
+    const numericValue = isNumeric ? parseInt(number) : 0
+    const suffix = isNumeric ? number.replace(numericValue.toString(), '') : ''
+    
+    const { count, ref } = useCount(numericValue)
+
+    return (
+        <motion.div
+            ref={ref}
+            initial={{ opacity: 0, y: 20 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            transition={{
+                duration: 0.5,
+                type: 'spring',
+                stiffness: 100,
+            }}
+            className="text-center"
+        >
+            <motion.div 
+                className="text-4xl font-bold text-gray-900 dark:text-white mb-2"
+                whileInView={{ scale: [0.5, 1.2, 1] }}
+                transition={{ duration: 0.5, times: [0, 0.8, 1] }}
+            >
+                {isNumeric ? count : number}{suffix}
+            </motion.div>
+            <div className="text-gray-600 dark:text-gray-400">{label}</div>
+        </motion.div>
+    )
 }
 
 export default function About() {
@@ -116,14 +148,11 @@ export default function About() {
                             className="grid grid-cols-2 md:grid-cols-4 gap-8"
                         >
                             {aboutContent.metrics.map((metric) => (
-                                <div key={metric.label} className="text-center">
-                                    <div className="text-4xl font-bold text-gray-900 dark:text-white mb-2">
-                                        {metric.number}
-                                    </div>
-                                    <div className="text-gray-600 dark:text-gray-400">
-                                        {metric.label}
-                                    </div>
-                                </div>
+                                <MetricCard
+                                    key={metric.label}
+                                    number={metric.number}
+                                    label={metric.label}
+                                />
                             ))}
                         </motion.div>
 
