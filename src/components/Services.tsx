@@ -1,166 +1,165 @@
 'use client'
 
 import { motion } from 'framer-motion'
+import { useState } from 'react'
 import {
     CodeBracketIcon,
-    CommandLineIcon,
-    CubeIcon,
     DevicePhoneMobileIcon,
-    RocketLaunchIcon,
     ServerIcon,
+    CircleStackIcon,
+    SwatchIcon,
+    LightBulbIcon,
 } from '@heroicons/react/24/outline'
 
 const services = [
     {
         title: 'Web Development',
+        icon: CodeBracketIcon,
         description:
             'Building responsive and performant web applications using modern technologies.',
-        icon: CodeBracketIcon,
-        gradient: 'from-blue-400 to-indigo-600',
-        features: [
+        skills: [
             'React/Next.js',
             'Performance Optimization',
             'SEO',
             'Responsive Design',
         ],
+        color: 'from-blue-400 to-violet-400',
     },
     {
         title: 'Mobile Development',
-        description: 'Creating native and cross-platform mobile applications.',
         icon: DevicePhoneMobileIcon,
-        gradient: 'from-purple-400 to-pink-600',
-        features: [
+        description: 'Creating native and cross-platform mobile applications.',
+        skills: [
             'React Native',
             'iOS/Android',
             'UI/UX Design',
             'App Store Deployment',
         ],
+        color: 'from-emerald-400 to-cyan-400',
     },
     {
         title: 'Backend Development',
-        description: 'Designing scalable server architectures and APIs.',
         icon: ServerIcon,
-        gradient: 'from-green-400 to-emerald-600',
-        features: [
+        description: 'Designing scalable server architectures and APIs.',
+        skills: [
             'Node.js/Express',
             'Database Design',
             'API Development',
             'Cloud Services',
         ],
+        color: 'from-orange-400 to-pink-400',
     },
     {
         title: 'DevOps',
+        icon: CircleStackIcon,
         description: 'Implementing CI/CD pipelines and cloud infrastructure.',
-        icon: CommandLineIcon,
-        gradient: 'from-red-400 to-rose-600',
-        features: ['AWS/Cloud', 'Docker/K8s', 'CI/CD', 'Monitoring'],
+        skills: ['AWS/Cloud', 'Docker/K8s', 'CI/CD', 'Monitoring'],
+        color: 'from-purple-400 to-indigo-400',
     },
     {
         title: 'UI/UX Design',
+        icon: SwatchIcon,
         description: 'Creating intuitive and beautiful user interfaces.',
-        icon: CubeIcon,
-        gradient: 'from-amber-400 to-orange-600',
-        features: [
+        skills: [
             'Wireframing',
             'Prototyping',
             'User Research',
             'Design Systems',
         ],
+        color: 'from-red-400 to-rose-400',
     },
     {
         title: 'Consulting',
+        icon: LightBulbIcon,
         description: 'Technical consulting and architecture planning.',
-        icon: RocketLaunchIcon,
-        gradient: 'from-cyan-400 to-teal-600',
-        features: [
+        skills: [
             'Architecture Review',
             'Tech Stack Selection',
             'Performance Audit',
             'Best Practices',
         ],
+        color: 'from-yellow-400 to-amber-400',
     },
 ]
 
 export default function Services() {
-    return (
-        <section className="py-20 bg-gray-50 dark:bg-gray-800 overflow-hidden">
-            {/* Background Decorative Elements */}
-            <div className="absolute inset-0 overflow-hidden">
-                <div className="absolute -top-1/2 -right-1/4 w-96 h-96 bg-gradient-to-br from-purple-500/10 to-transparent rounded-full blur-3xl" />
-                <div className="absolute -bottom-1/2 -left-1/4 w-96 h-96 bg-gradient-to-tr from-blue-500/10 to-transparent rounded-full blur-3xl" />
-            </div>
+    const [hoveredIndex, setHoveredIndex] = useState<number | null>(null)
 
-            <div className="container mx-auto px-4 relative">
+    return (
+        <section
+            id="services"
+            className="relative py-24 bg-[#F1EFE7] dark:bg-gray-900"
+        >
+            <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+                {/* Header */}
                 <motion.div
                     initial={{ opacity: 0, y: 20 }}
                     whileInView={{ opacity: 1, y: 0 }}
-                    transition={{ duration: 0.5 }}
-                    className="text-center mb-16"
+                    viewport={{ once: true }}
+                    className="text-center max-w-3xl mx-auto mb-20 space-y-4"
                 >
-                    <h2 className="text-4xl font-bold text-gray-900 dark:text-white mb-4">
+                    <h2 className="text-3xl md:text-4xl font-bold text-gray-900 dark:text-white">
                         Services I Offer
                     </h2>
-                    <p className="text-lg text-gray-600 dark:text-gray-300 max-w-2xl mx-auto">
+                    <p className="text-lg text-gray-600 dark:text-gray-400">
                         Comprehensive solutions to help your business grow and
                         succeed in the digital world.
                     </p>
                 </motion.div>
 
+                {/* Services Grid */}
                 <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
                     {services.map((service, index) => (
                         <motion.div
                             key={service.title}
                             initial={{ opacity: 0, y: 20 }}
                             whileInView={{ opacity: 1, y: 0 }}
-                            transition={{ duration: 0.5, delay: index * 0.1 }}
-                            whileHover={{ y: -5 }}
-                            className="group relative bg-white dark:bg-gray-900 p-8 rounded-2xl shadow-lg hover:shadow-xl transition-all duration-300"
+                            viewport={{ once: true }}
+                            transition={{ delay: index * 0.1 }}
+                            onMouseEnter={() => setHoveredIndex(index)}
+                            onMouseLeave={() => setHoveredIndex(null)}
+                            className="relative group"
                         >
-                            {/* Gradient Border */}
-                            <div
-                                className="absolute inset-0 rounded-2xl bg-gradient-to-br opacity-0 group-hover:opacity-100 transition-opacity duration-300"
-                                style={{ padding: '1px' }}
-                            >
-                                <div className="absolute inset-0 rounded-2xl bg-gradient-to-br opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
-                                <div className="h-full w-full bg-white dark:bg-gray-900 rounded-2xl" />
-                            </div>
-
-                            <div className="relative">
-                                {/* Icon with gradient background */}
+                            <div className="relative h-full bg-white dark:bg-gray-800 p-8 rounded-2xl overflow-hidden transition-all duration-300 hover:translate-y-[-4px]">
+                                {/* Background Gradient */}
                                 <div
-                                    className={`w-14 h-14 rounded-lg bg-gradient-to-br ${service.gradient} p-3 mb-6 transform group-hover:scale-110 transition-transform duration-300`}
-                                >
-                                    <service.icon className="w-full h-full text-white" />
-                                </div>
+                                    className={`absolute inset-0 bg-gradient-to-br ${service.color} opacity-0 group-hover:opacity-5 transition-opacity duration-300`}
+                                />
 
-                                <h3 className="text-xl font-semibold text-gray-900 dark:text-white mb-4 group-hover:text-transparent group-hover:bg-clip-text group-hover:bg-gradient-to-r group-hover:from-purple-400 group-hover:to-pink-600">
+                                {/* Icon */}
+                                <service.icon className="w-8 h-8 mb-6 text-gray-900 dark:text-white" />
+
+                                {/* Content */}
+                                <h3 className="text-xl font-bold text-gray-900 dark:text-white mb-4">
                                     {service.title}
                                 </h3>
-
-                                <p className="text-gray-600 dark:text-gray-300 mb-6">
+                                <p className="text-gray-600 dark:text-gray-400 mb-6">
                                     {service.description}
                                 </p>
 
-                                {/* Features List */}
-                                <ul className="space-y-2">
-                                    {service.features.map((feature, i) => (
-                                        <motion.li
-                                            key={feature}
+                                {/* Skills */}
+                                <div className="space-y-2">
+                                    {service.skills.map((skill, skillIndex) => (
+                                        <motion.div
+                                            key={skill}
                                             initial={{ opacity: 0, x: -10 }}
-                                            whileInView={{ opacity: 1, x: 0 }}
+                                            animate={
+                                                hoveredIndex === index
+                                                    ? { opacity: 1, x: 0 }
+                                                    : { opacity: 0.7, x: 0 }
+                                            }
                                             transition={{
-                                                duration: 0.3,
-                                                delay: index * 0.1 + i * 0.1,
+                                                delay: skillIndex * 0.1,
                                             }}
-                                            className="flex items-center text-sm text-gray-600 dark:text-gray-400"
+                                            className="flex items-center space-x-2"
                                         >
-                                            <span
-                                                className={`w-2 h-2 rounded-full bg-gradient-to-r ${service.gradient} mr-2`}
-                                            />
-                                            {feature}
-                                        </motion.li>
+                                            <div className="w-1.5 h-1.5 rounded-full bg-gray-400 dark:bg-gray-600" />
+                                            <span className="text-sm text-gray-600 dark:text-gray-400">
+                                                {skill}
+                                            </span>
+                                        </motion.div>
                                     ))}
-                                </ul>
+                                </div>
                             </div>
                         </motion.div>
                     ))}
