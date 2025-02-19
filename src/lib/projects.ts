@@ -1,51 +1,36 @@
 export interface Project {
-    id: number
+    id: string
     title: string
     description: string
     image: string
-    tags: string[]
-    link?: string
-    github?: string
-    details: {
-        challenge: string
-        solution: string
-        impact: string
-        technologies: string[]
-    }
+    category: string
+    technologies: string[]
+    liveUrl?: string
+    githubUrl?: string
 }
 
 export const projects: Project[] = [
     {
-        id: 1,
-        title: 'E-commerce Platform',
+        id: '1',
+        title: 'E-Commerce Platform',
         description:
-            'A full-stack e-commerce solution with React, Node.js, and MongoDB.',
-        image: '/placeholder.svg?height=300&width=400',
-        tags: ['React', 'Node.js', 'MongoDB', 'Express'],
-        link: 'https://example.com/ecommerce',
-        github: 'https://github.com/yourusername/ecommerce',
-        details: {
-            challenge:
-                'Building a scalable e-commerce platform with real-time inventory management.',
-            solution:
-                'Implemented websockets for real-time updates and Redis for caching.',
-            impact: 'Increased sales by 40% and reduced page load time by 60%.',
-            technologies: [
-                'React',
-                'Node.js',
-                'MongoDB',
-                'Express',
-                'Redis',
-                'WebSocket',
-            ],
-        },
+            'A modern e-commerce platform with real-time inventory management and AI-powered recommendations.',
+        image: '/projects/ecommerce.jpg',
+        category: 'Web Development',
+        technologies: ['Next.js', 'Node.js', 'MongoDB', 'TailwindCSS'],
+        liveUrl: 'https://ecommerce-demo.com',
+        githubUrl: 'https://github.com/yourusername/ecommerce',
     },
     {
-        id: 2,
-        title: 'Example Project',
-        description: 'This is an example project',
-        image: '/placeholder.jpg',
-        tags: ['React', 'TypeScript', 'Next.js'],
+        id: '2',
+        title: 'Task Management App',
+        description:
+            'A mobile app for task management with real-time collaboration features.',
+        image: '/projects/taskapp.jpg',
+        category: 'Mobile Apps',
+        technologies: ['React Native', 'Firebase', 'Redux'],
+        liveUrl: 'https://taskapp-demo.com',
+        githubUrl: 'https://github.com/yourusername/taskapp',
     },
-    // ... other projects
+    // Add more projects...
 ]
