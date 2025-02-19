@@ -58,58 +58,67 @@ interface FormData {
 }
 
 export default function Contact() {
-    const [formData, setFormData] = useState<FormData>({
+    const [formData, setFormData] = useState({
         name: '',
         email: '',
         subject: '',
-        customSubject: '',
         message: '',
     })
 
-    const [isSubmitting, setIsSubmitting] = useState(false)
+    const [status, setStatus] = useState({
+        isSubmitting: false,
+        isSuccess: false,
+        isError: false,
+        message: '',
+    })
 
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault()
-        setIsSubmitting(true)
+        setStatus({
+            isSubmitting: true,
+            isSuccess: false,
+            isError: false,
+            message: '',
+        })
 
         try {
-            const submissionData = {
-                ...formData,
-                // Use custom subject if "Other" is selected
-                subject:
-                    formData.subject === 'other'
-                        ? formData.customSubject
-                        : formData.subject,
-                metadata: {
-                    timestamp: new Date().toISOString(),
-                    subjectCategory: formData.subject, // Original selection for analytics
-                    customSubject:
-                        formData.subject === 'other'
-                            ? formData.customSubject
-                            : null,
-                },
-            }
-
             const response = await fetch('/api/contact', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify(submissionData),
+                body: JSON.stringify(formData),
             })
 
-            if (!response.ok) throw new Error('Failed to send message')
+            const data = await response.json()
 
+            if (!response.ok) {
+                throw new Error(data.error || 'Failed to send message')
+            }
+
+            setStatus({
+                isSubmitting: false,
+                isSuccess: true,
+                isError: false,
+                message:
+                    'Message sent successfully! We will get back to you soon.',
+            })
+
+            // Reset form
             setFormData({
                 name: '',
                 email: '',
                 subject: '',
-                customSubject: '',
                 message: '',
             })
-            alert('Message sent successfully!')
         } catch (error) {
-            alert('Failed to send message. Please try again.')
-        } finally {
-            setIsSubmitting(false)
+            setStatus({
+                isSubmitting: false,
+                isSuccess: false,
+                isError: true,
+                message:
+                    error instanceof Error
+                        ? error.message
+                        : 'Failed to send message. Please try again.',
+            })
         }
     }
 
@@ -297,20 +306,36 @@ export default function Contact() {
                                         />
                                     </div>
                                 </div>
+                                {status.message && (
+                                    <motion.div
+                                        initial={{ opacity: 0, y: -10 }}
+                                        animate={{ opacity: 1, y: 0 }}
+                                        className={`p-4 rounded-lg mb-6 ${
+                                            status.isSuccess
+                                                ? 'bg-green-50 text-green-800'
+                                                : 'bg-red-50 text-red-800'
+                                        }`}
+                                    >
+                                        {status.message}
+                                    </motion.div>
+                                )}
                                 <motion.button
                                     whileHover={{ scale: 1.02 }}
                                     whileTap={{ scale: 0.98 }}
                                     type="submit"
-                                    disabled={isSubmitting}
+                                    disabled={status.isSubmitting}
                                     className="w-full px-6 py-3 bg-black dark:bg-white text-white dark:text-black rounded-lg font-medium hover:bg-gray-900 dark:hover:bg-gray-100 transition-colors disabled:opacity-50 flex items-center justify-center gap-2"
                                 >
-                                    <span>
-                                        {isSubmitting
-                                            ? 'Sending...'
-                                            : 'Send Message'}
-                                    </span>
-                                    {!isSubmitting && (
-                                        <PaperAirplaneIcon className="h-5 w-5 transform rotate-90 -translate-y-px" />
+                                    {status.isSubmitting ? (
+                                        <>
+                                            <div className="w-5 h-5 border-2 border-white dark:border-black border-t-transparent dark:border-t-transparent rounded-full animate-spin" />
+                                            <span>Sending...</span>
+                                        </>
+                                    ) : (
+                                        <>
+                                            <span>Send Message</span>
+                                            <PaperAirplaneIcon className="h-5 w-5 transform rotate-90 -translate-y-px" />
+                                        </>
                                     )}
                                 </motion.button>
                             </form>
