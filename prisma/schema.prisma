@@ -1,12 +1,218 @@
 datasource db {
   provider = "postgresql"
   url      = env("DATABASE_URL")
+  directUrl = env("DIRECT_URL")
+  schemas  = ["public"]
 }
 
 generator client {
   provider = "prisma-client-js"
+  previewFeatures = ["multiSchema", "postgresqlExtensions"]
 }
 
+model User {
+  id            String    @id @default(cuid())
+  name          String?
+  email         String    @unique
+  password      String?
+  role          Role      @default(USER)
+  emailVerified DateTime?
+  image         String?
+  bio           String?   @db.Text
+  website       String?
+  location      String?
+  createdAt     DateTime  @default(now())
+  updatedAt     DateTime  @updatedAt
+  accounts      Account[]
+  sessions      Session[]
+  posts         Post[]
+  comments      Comment[]
+  likes         Like[]
+  bookmarks     Bookmark[]
+  analytics     Analytics[]
+  @@schema("public")
+}
+
+model VerificationToken {
+  identifier String
+  token      String   @unique
+  expires    DateTime
+
+  @@unique([identifier, token])
+}
+
+model Post {
+  id          String    @id @default(cuid())
+  title       String
+  slug        String    @unique
+  content     String    @db.Text
+  excerpt     String?   @db.Text
+  status      PostStatus  @default(DRAFT)
+  featured    Boolean   @default(false)
+  published   Boolean   @default(false)
+  publishedAt DateTime?
+  author      User      @relation(fields: [authorId], references: [id])
+  authorId    String
+  categories  Category[]
+  tags        Tag[]
+  comments    Comment[]
+  likes       Like[]
+  bookmarks   Bookmark[]
+  analytics   Analytics[]
+  coverImage  String?
+  readingTime String?
+  seoTitle    String?
+  seoDesc     String?
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
+
+  @@index([slug])
+  @@index([authorId])
+  @@schema("public")
+}
+
+model Category {
+  id          String    @id @default(cuid())
+  name        String    @unique
+  slug        String    @unique
+  description String?   @db.Text
+  posts       Post[]
+  parentId    String?
+  parent      Category? @relation("CategoryHierarchy", fields: [parentId], references: [id])
+  children    Category[] @relation("CategoryHierarchy")
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
+
+  @@index([slug])
+  @@schema("public")
+}
+
+model Tag {
+  id          String    @id @default(cuid())
+  name        String    @unique
+  slug        String    @unique
+  description String?   @db.Text
+  posts       Post[]
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
+
+  @@index([slug])
+  @@schema("public")
+}
+
+model Comment {
+  id        String    @id @default(cuid())
+  content   String    @db.Text
+  author    User      @relation(fields: [authorId], references: [id])
+  authorId  String
+  post      Post      @relation(fields: [postId], references: [id], onDelete: Cascade)
+  postId    String
+  parentId  String?
+  parent    Comment?  @relation("CommentReplies", fields: [parentId], references: [id])
+  replies   Comment[] @relation("CommentReplies")
+  status    CommentStatus @default(PENDING)
+  createdAt DateTime  @default(now())
+  updatedAt DateTime  @updatedAt
+
+  @@index([postId])
+  @@index([authorId])
+  @@schema("public")
+}
+
+model Like {
+  id        String   @id @default(cuid())
+  user      User     @relation(fields: [userId], references: [id])
+  userId    String
+  post      Post     @relation(fields: [postId], references: [id])
+  postId    String
+  createdAt DateTime @default(now())
+
+  @@unique([userId, postId])
+  @@index([postId])
+  @@schema("public")
+}
+
+model Bookmark {
+  id        String   @id @default(cuid())
+  user      User     @relation(fields: [userId], references: [id])
+  userId    String
+  post      Post     @relation(fields: [postId], references: [id])
+  postId    String
+  createdAt DateTime @default(now())
+
+  @@unique([userId, postId])
+  @@index([postId])
+  @@schema("public")
+}
+
+model Analytics {
+  id        String    @id @default(cuid())
+  post      Post?     @relation(fields: [postId], references: [id])
+  postId    String?
+  user      User?     @relation(fields: [userId], references: [id])
+  userId    String?
+  pageView  Boolean   @default(true)
+  event     String?
+  metadata  Json?
+  createdAt DateTime  @default(now())
+
+  @@index([postId])
+  @@index([userId])
+  @@schema("public")
+}
+
+model Newsletter {
+  id        String   @id @default(cuid())
+  email     String   @unique
+  status    SubscriptionStatus @default(ACTIVE)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model ContactSubmission {
+    id        String   @id @default(cuid())
+    name      String
+    email     String
+    subject   String
+    message   String   @db.Text
+    createdAt DateTime @default(now())
+    status    Status   @default(PENDING)
+    metadata  Json?
+}
+
+enum Role {
+  ADMIN
+  AUTHOR
+  USER
+}
+
+enum PostStatus {
+    DRAFT
+    PUBLISHED
+    ARCHIVED
+}
+
+enum CommentStatus {
+    PENDING
+    APPROVED
+    SPAM
+    DELETED
+}
+
+enum Status {
+    PENDING
+    READ
+    REPLIED
+    ARCHIVED
+}
+
+enum SubscriptionStatus {
+    ACTIVE
+    UNSUBSCRIBED
+    BOUNCED
+}
+
+// NextAuth.js Models
 model Account {
   id                String  @id @default(cuid())
   userId            String
@@ -24,6 +230,7 @@ model Account {
   user User @relation(fields: [userId], references: [id], onDelete: Cascade)
 
   @@unique([provider, providerAccountId])
+  @@schema("public")
 }
 
 model Session {
@@ -32,116 +239,4 @@ model Session {
   userId       String
   expires      DateTime
   user         User     @relation(fields: [userId], references: [id], onDelete: Cascade)
-}
-
-model User {
-  id            String    @id @default(cuid())
-  name          String?
-  email         String    @unique
-  password      String?
-  role          UserRole  @default(USER)
-  emailVerified DateTime?
-  image         String?
-  createdAt     DateTime  @default(now())
-  updatedAt     DateTime  @updatedAt
-  accounts      Account[]
-  sessions      Session[]
-  posts         Post[]
-  comments      Comment[]
-  analytics     Analytics[]
-}
-
-model VerificationToken {
-  identifier String
-  token      String   @unique
-  expires    DateTime
-
-  @@unique([identifier, token])
-}
-
-model Post {
-  id          String    @id @default(cuid())
-  title       String
-  slug        String    @unique
-  content     String    @db.Text
-  excerpt     String    @db.Text
-  published   Boolean   @default(false)
-  featured    Boolean   @default(false)
-  author      User      @relation(fields: [authorId], references: [id])
-  authorId    String
-  categories  Category[]
-  tags        Tag[]
-  comments    Comment[]
-  analytics   Analytics[]
-  coverImage  String?
-  readingTime String?
-  createdAt   DateTime  @default(now())
-  updatedAt   DateTime  @updatedAt
-}
-
-model Category {
-  id          String    @id @default(cuid())
-  name        String    @unique
-  slug        String    @unique
-  description String?
-  posts       Post[]
-  createdAt   DateTime  @default(now())
-  updatedAt   DateTime  @updatedAt
-}
-
-model Tag {
-  id          String    @id @default(cuid())
-  name        String    @unique
-  slug        String    @unique
-  posts       Post[]
-  createdAt   DateTime  @default(now())
-  updatedAt   DateTime  @updatedAt
-}
-
-model Comment {
-  id        String    @id @default(cuid())
-  content   String    @db.Text
-  author    User      @relation(fields: [authorId], references: [id])
-  authorId  String
-  post      Post      @relation(fields: [postId], references: [id], onDelete: Cascade)
-  postId    String
-  approved  Boolean   @default(false)
-  createdAt DateTime  @default(now())
-  updatedAt DateTime  @updatedAt
-}
-
-model Analytics {
-  id        String    @id @default(cuid())
-  post      Post?     @relation(fields: [postId], references: [id])
-  postId    String?
-  user      User?     @relation(fields: [userId], references: [id])
-  userId    String?
-  pageView  Boolean   @default(true)
-  event     String?
-  metadata  Json?
-  createdAt DateTime  @default(now())
-}
-
-model ContactSubmission {
-    id        String   @id @default(cuid())
-    name      String
-    email     String
-    subject   String
-    message   String   @db.Text
-    createdAt DateTime @default(now())
-    status    Status   @default(PENDING)
-    metadata  Json?
-}
-
-enum UserRole {
-  ADMIN
-  USER
-  AUTHOR
-}
-
-enum Status {
-    PENDING
-    READ
-    REPLIED
-    ARCHIVED
 } 

@@ -6,13 +6,13 @@ import {
     UsersIcon,
     DocumentTextIcon,
     ChatBubbleLeftIcon,
-    EnvelopeIcon,
-    ChartBarIcon,
     EyeIcon,
     HeartIcon,
     ArrowTrendingUpIcon,
+    ArrowUpIcon,
+    ArrowDownIcon,
+    ClockIcon,
 } from '@heroicons/react/24/outline'
-import { Line } from 'react-chartjs-2'
 import {
     Chart as ChartJS,
     CategoryScale,
@@ -22,7 +22,10 @@ import {
     Title,
     Tooltip,
     Legend,
+    Filler,
 } from 'chart.js'
+import { Line } from 'react-chartjs-2'
+import { format } from 'date-fns'
 
 // Register ChartJS components
 ChartJS.register(
@@ -32,94 +35,83 @@ ChartJS.register(
     LineElement,
     Title,
     Tooltip,
-    Legend
+    Legend,
+    Filler
 )
 
 interface DashboardStats {
-    stats: {
-        totalUsers: number
+    overview: {
         totalPosts: number
-        totalComments: number
-        totalMessages: number
         totalViews: number
-        totalLikes: number
-        growthRate: number
+        totalComments: number
+        engagement: number
+        growth: number
     }
-    recentMessages: Array<{
-        id: string
-        name: string
-        email: string
-        subject: string
-        message: string
-        createdAt: string
-        status: string
-    }>
-    recentPosts: Array<{
-        id: string
-        title: string
-        author: string
-        views: number
-        likes: number
-        createdAt: string
-    }>
+    recentActivity: {
+        posts: Array<{
+            id: string
+            title: string
+            views: number
+            likes: number
+            createdAt: string
+        }>
+        comments: Array<{
+            id: string
+            content: string
+            author: string
+            postTitle: string
+            createdAt: string
+        }>
+    }
     analytics: {
         views: number[]
-        likes: number[]
-        comments: number[]
+        engagement: number[]
         dates: string[]
     }
 }
 
 export default function AdminDashboard() {
-    const [data, setData] = useState<DashboardStats | null>(null)
+    const [stats, setStats] = useState<DashboardStats | null>(null)
     const [isLoading, setIsLoading] = useState(true)
-    const [timeframe, setTimeframe] = useState<'week' | 'month' | 'year'>(
-        'week'
-    )
-
-    const chartData = {
-        labels: data?.analytics.dates || [],
-        datasets: [
-            {
-                label: 'Views',
-                data: data?.analytics.views || [],
-                borderColor: 'rgb(59, 130, 246)',
-                backgroundColor: 'rgba(59, 130, 246, 0.5)',
-            },
-            {
-                label: 'Likes',
-                data: data?.analytics.likes || [],
-                borderColor: 'rgb(239, 68, 68)',
-                backgroundColor: 'rgba(239, 68, 68, 0.5)',
-            },
-            {
-                label: 'Comments',
-                data: data?.analytics.comments || [],
-                borderColor: 'rgb(16, 185, 129)',
-                backgroundColor: 'rgba(16, 185, 129, 0.5)',
-            },
-        ],
-    }
-
-    const chartOptions = {
-        responsive: true,
-        plugins: {
-            legend: {
-                position: 'top' as const,
-            },
-            title: {
-                display: true,
-                text: 'Blog Performance',
-            },
-        },
-    }
 
     useEffect(() => {
-        async function fetchDashboardData() {
+        // Fetch dashboard data
+        const fetchData = async () => {
             try {
-                const response = await fetch('/api/admin/dashboard')
-                const data = await response.json()
-                setData(data)
+                // Simulated data for now
+                const mockData: DashboardStats = {
+                    overview: {
+                        totalPosts: 125,
+                        totalViews: 45892,
+                        totalComments: 2341,
+                        engagement: 67,
+                        growth: 12.5,
+                    },
+                    recentActivity: {
+                        posts: [
+                            {
+                                id: '1',
+                                title: 'Getting Started with Next.js',
+                                views: 1234,
+                                likes: 89,
+                                createdAt: new Date().toISOString(),
+                            },
+                            // Add more mock posts...
+                        ],
+                        comments: [],
+                    },
+                    analytics: {
+                        dates: Array.from({ length: 7 }, (_, i) =>
+                            format(
+                                new Date(Date.now() - i * 24 * 60 * 60 * 1000),
+                                'MMM dd'
+                            )
+                        ).reverse(),
+                        views: [1200, 1900, 2100, 2500, 2200, 2800, 3100],
+                        engagement: [65, 72, 68, 75, 70, 78, 82],
+                    },
+                }
+                setStats(mockData)
             } catch (error) {
                 console.error('Failed to fetch dashboard data:', error)
             } finally {
@@ -127,203 +119,231 @@ export default function AdminDashboard() {
             }
         }
 
-        fetchDashboardData()
+        fetchData()
     }, [])
+
+    const StatCard = ({
+        title,
+        value,
+        change,
+        icon: Icon,
+        trend = 'up',
+    }: {
+        title: string
+        value: string | number
+        change: string
+        icon: any
+        trend?: 'up' | 'down'
+    }) => (
+        <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            className="bg-white dark:bg-gray-800 rounded-xl shadow-sm p-6"
+        >
+            <div className="flex items-center justify-between">
+                <div className="flex items-center space-x-2">
+                    <div className="p-2 bg-blue-50 dark:bg-blue-900/20 rounded-lg">
+                        <Icon className="w-6 h-6 text-blue-600 dark:text-blue-400" />
+                    </div>
+                    <h3 className="text-sm font-medium text-gray-600 dark:text-gray-400">
+                        {title}
+                    </h3>
+                </div>
+                <span
+                    className={`inline-flex items-center px-2 py-1 rounded-full text-xs font-medium ${
+                        trend === 'up'
+                            ? 'text-green-600 bg-green-50 dark:text-green-400 dark:bg-green-900/20'
+                            : 'text-red-600 bg-red-50 dark:text-red-400 dark:bg-red-900/20'
+                    }`}
+                >
+                    {trend === 'up' ? (
+                        <ArrowUpIcon className="w-3 h-3 mr-1" />
+                    ) : (
+                        <ArrowDownIcon className="w-3 h-3 mr-1" />
+                    )}
+                    {change}
+                </span>
+            </div>
+            <div className="mt-4">
+                <p className="text-2xl font-semibold text-gray-900 dark:text-white">
+                    {typeof value === 'number' ? value.toLocaleString() : value}
+                </p>
+            </div>
+        </motion.div>
+    )
+
+    const RecentActivity = () => (
+        <div className="bg-white dark:bg-gray-800 rounded-xl shadow-sm p-6">
+            <h3 className="text-lg font-medium text-gray-900 dark:text-white mb-4">
+                Recent Activity
+            </h3>
+            <div className="space-y-4">
+                {stats?.recentActivity.posts.map((post) => (
+                    <div
+                        key={post.id}
+                        className="flex items-start space-x-3 p-3 bg-gray-50 dark:bg-gray-700/50 rounded-lg"
+                    >
+                        <div className="p-2 bg-blue-50 dark:bg-blue-900/20 rounded-lg shrink-0">
+                            <DocumentTextIcon className="w-5 h-5 text-blue-600 dark:text-blue-400" />
+                        </div>
+                        <div className="min-w-0 flex-1">
+                            <p className="text-sm font-medium text-gray-900 dark:text-white truncate">
+                                {post.title}
+                            </p>
+                            <div className="mt-1 flex items-center space-x-2 text-sm text-gray-500 dark:text-gray-400">
+                                <span className="flex items-center">
+                                    <EyeIcon className="w-4 h-4 mr-1" />
+                                    {post.views}
+                                </span>
+                                <span>•</span>
+                                <span className="flex items-center">
+                                    <HeartIcon className="w-4 h-4 mr-1" />
+                                    {post.likes}
+                                </span>
+                                <span>•</span>
+                                <span className="flex items-center">
+                                    <ClockIcon className="w-4 h-4 mr-1" />
+                                    {format(
+                                        new Date(post.createdAt),
+                                        'MMM d, yyyy'
+                                    )}
+                                </span>
+                            </div>
+                        </div>
+                    </div>
+                ))}
+            </div>
+        </div>
+    )
+
+    const AnalyticsChart = () => {
+        const chartData = {
+            labels: stats?.analytics.dates || [],
+            datasets: [
+                {
+                    label: 'Views',
+                    data: stats?.analytics.views || [],
+                    borderColor: 'rgb(59, 130, 246)',
+                    backgroundColor: 'rgba(59, 130, 246, 0.1)',
+                    fill: true,
+                    tension: 0.4,
+                },
+                {
+                    label: 'Engagement',
+                    data: stats?.analytics.engagement || [],
+                    borderColor: 'rgb(16, 185, 129)',
+                    backgroundColor: 'rgba(16, 185, 129, 0.1)',
+                    fill: true,
+                    tension: 0.4,
+                },
+            ],
+        }
+
+        const chartOptions = {
+            responsive: true,
+            maintainAspectRatio: false,
+            plugins: {
+                legend: {
+                    position: 'top' as const,
+                    labels: {
+                        color: 'rgb(156, 163, 175)',
+                        font: {
+                            size: 12,
+                        },
+                    },
+                },
+            },
+            scales: {
+                x: {
+                    grid: {
+                        display: false,
+                    },
+                    ticks: {
+                        color: 'rgb(156, 163, 175)',
+                    },
+                },
+                y: {
+                    beginAtZero: true,
+                    grid: {
+                        color: 'rgba(156, 163, 175, 0.1)',
+                    },
+                    ticks: {
+                        color: 'rgb(156, 163, 175)',
+                    },
+                },
+            },
+            interaction: {
+                intersect: false,
+                mode: 'index' as const,
+            },
+        }
+
+        if (isLoading) {
+            return (
+                <div className="bg-white dark:bg-gray-800 rounded-xl shadow-sm p-6">
+                    <div className="h-[300px] flex items-center justify-center">
+                        <div className="animate-spin rounded-full h-8 w-8 border-2 border-blue-500 border-t-transparent" />
+                    </div>
+                </div>
+            )
+        }
+
+        return (
+            <div className="bg-white dark:bg-gray-800 rounded-xl shadow-sm p-6">
+                <h3 className="text-lg font-medium text-gray-900 dark:text-white mb-4">
+                    Analytics Overview
+                </h3>
+                <div className="h-[300px]">
+                    <Line data={chartData} options={chartOptions} />
+                </div>
+            </div>
+        )
+    }
 
     if (isLoading) {
         return (
             <div className="flex items-center justify-center min-h-[60vh]">
-                <div className="animate-spin rounded-full h-32 w-32 border-t-2 border-b-2 border-gray-900" />
-            </div>
-        )
-    }
-
-    if (!data) {
-        return (
-            <div className="text-center text-gray-500 dark:text-gray-400">
-                Failed to load dashboard data
+                <div className="animate-spin rounded-full h-12 w-12 border-2 border-blue-500 border-t-transparent" />
             </div>
         )
     }
 
     return (
-        <div className="space-y-6 p-6">
-            <div className="flex justify-between items-center">
-                <h1 className="text-2xl font-bold text-gray-900 dark:text-white">
-                    Dashboard Overview
-                </h1>
-                <div className="flex gap-2">
-                    {['week', 'month', 'year'].map((period) => (
-                        <button
-                            key={period}
-                            onClick={() => setTimeframe(period as any)}
-                            className={`px-4 py-2 rounded-lg text-sm font-medium ${
-                                timeframe === period
-                                    ? 'bg-blue-600 text-white'
-                                    : 'bg-gray-100 text-gray-600 hover:bg-gray-200 dark:bg-gray-800 dark:text-gray-300'
-                            }`}
-                        >
-                            {period.charAt(0).toUpperCase() + period.slice(1)}
-                        </button>
-                    ))}
-                </div>
-            </div>
-
-            {/* Stats Grid */}
+        <div className="space-y-6">
+            {/* Overview Section */}
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
                 <StatCard
-                    title="Total Views"
-                    value={data?.stats.totalViews || 0}
-                    change="+12.5%"
-                    icon={EyeIcon}
-                    color="blue"
-                />
-                <StatCard
-                    title="Total Likes"
-                    value={data?.stats.totalLikes || 0}
-                    change="+8.2%"
-                    icon={HeartIcon}
-                    color="red"
-                />
-                <StatCard
                     title="Total Posts"
-                    value={data?.stats.totalPosts || 0}
-                    change="+5.7%"
+                    value={stats?.overview.totalPosts || 0}
+                    change="+12.5%"
                     icon={DocumentTextIcon}
-                    color="green"
                 />
                 <StatCard
-                    title="Growth Rate"
-                    value={`${data?.stats.growthRate || 0}%`}
-                    change="+2.3%"
+                    title="Total Views"
+                    value={stats?.overview.totalViews || 0}
+                    change="+8.2%"
+                    icon={EyeIcon}
+                />
+                <StatCard
+                    title="Comments"
+                    value={stats?.overview.totalComments || 0}
+                    change="-2.4%"
+                    icon={ChatBubbleLeftIcon}
+                    trend="down"
+                />
+                <StatCard
+                    title="Engagement"
+                    value={`${stats?.overview.engagement || 0}%`}
+                    change="+5.7%"
                     icon={ArrowTrendingUpIcon}
-                    color="purple"
                 />
             </div>
 
             {/* Analytics Chart */}
-            <div className="bg-white dark:bg-gray-800 rounded-lg shadow-md p-6">
-                <Line options={chartOptions} data={chartData} />
-            </div>
+            <AnalyticsChart />
 
             {/* Recent Activity */}
-            <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-                <RecentPosts posts={data?.recentPosts || []} />
-                <RecentMessages messages={data?.recentMessages || []} />
-            </div>
-        </div>
-    )
-}
-
-function StatCard({
-    title,
-    value,
-    change,
-    icon: Icon,
-    color,
-}: {
-    title: string
-    value: number
-    change: string
-    icon: any
-    color: string
-}) {
-    return (
-        <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            className="bg-white dark:bg-gray-800 rounded-lg shadow-md p-6"
-        >
-            <div className="flex items-center">
-                <div
-                    className={`p-3 rounded-full bg-${color}-100 text-${color}-600`}
-                >
-                    <Icon className="w-6 h-6" />
-                </div>
-                <div className="ml-4">
-                    <h2 className="text-sm font-medium text-gray-600 dark:text-gray-400">
-                        {title}
-                    </h2>
-                    <p className="text-2xl font-semibold text-gray-900 dark:text-white">
-                        {value.toLocaleString()}
-                    </p>
-                    <p className="text-sm text-gray-500">{change}</p>
-                </div>
-            </div>
-        </motion.div>
-    )
-}
-
-function RecentMessages({ messages }: { messages: any[] }) {
-    return (
-        <div className="bg-white dark:bg-gray-800 rounded-lg shadow-md p-6">
-            <h2 className="text-lg font-semibold text-gray-900 dark:text-white mb-4">
-                Recent Messages
-            </h2>
-            {messages.length === 0 ? (
-                <p className="text-gray-500 dark:text-gray-400">
-                    No recent messages
-                </p>
-            ) : (
-                <div className="space-y-4">
-                    {messages.map((message) => (
-                        <div
-                            key={message.id}
-                            className="flex items-start justify-between"
-                        >
-                            <div>
-                                <p className="text-sm text-gray-900 dark:text-white">
-                                    {message.content}
-                                </p>
-                                <p className="text-sm text-gray-500">
-                                    from {message.name}
-                                </p>
-                            </div>
-                            <span className="text-sm text-gray-500">
-                                {new Date(
-                                    message.createdAt
-                                ).toLocaleDateString()}
-                            </span>
-                        </div>
-                    ))}
-                </div>
-            )}
-        </div>
-    )
-}
-
-function RecentPosts({ posts }: { posts: any[] }) {
-    return (
-        <div className="bg-white dark:bg-gray-800 rounded-lg shadow-md p-6">
-            <h2 className="text-lg font-semibold text-gray-900 dark:text-white mb-4">
-                Recent Posts
-            </h2>
-            {posts.length === 0 ? (
-                <p className="text-gray-500 dark:text-gray-400">
-                    No recent posts
-                </p>
-            ) : (
-                <div className="space-y-4">
-                    {posts.map((post) => (
-                        <div
-                            key={post.id}
-                            className="flex items-center justify-between"
-                        >
-                            <div>
-                                <h3 className="text-sm font-medium text-gray-900 dark:text-white">
-                                    {post.title}
-                                </h3>
-                                <p className="text-sm text-gray-500">
-                                    by {post.author}
-                                </p>
-                            </div>
-                            <span className="text-sm text-gray-500">
-                                {new Date(post.createdAt).toLocaleDateString()}
-                            </span>
-                        </div>
-                    ))}
-                </div>
-            )}
+            <RecentActivity />
         </div>
     )
 }
