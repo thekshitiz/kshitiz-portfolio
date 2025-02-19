@@ -375,7 +375,7 @@ export default function Contact() {
                                                 href="mailto:contact@yourname.com"
                                                 className="text-gray-600 dark:text-gray-400 hover:text-black dark:hover:text-white"
                                             >
-                                                contact@yourname.com
+                                                thekshitizrai@gmail.com
                                             </a>
                                         </div>
                                     </div>
@@ -389,7 +389,7 @@ export default function Contact() {
                                                 href="tel:+1234567890"
                                                 className="text-gray-600 dark:text-gray-400 hover:text-black dark:hover:text-white"
                                             >
-                                                +1 (234) 567-890
+                                                +977-9818180198
                                             </a>
                                         </div>
                                     </div>
@@ -400,11 +400,11 @@ export default function Contact() {
                                                 Address
                                             </p>
                                             <p className="text-gray-600 dark:text-gray-400">
-                                                123 Main Street,
+                                                Triyuga-10,
                                                 <br />
-                                                City, State 12345,
+                                                Udayapur, Koshi 56300,
                                                 <br />
-                                                Country
+                                                Nepal
                                             </p>
                                         </div>
                                     </div>

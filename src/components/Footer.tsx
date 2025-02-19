@@ -77,24 +77,24 @@ export default function Footer() {
                         <ul className="space-y-4 text-gray-400">
                             <li>
                                 <a
-                                    href="mailto:hello@example.com"
+                                    href="mailto:thekshitizrai@gmail.com"
                                     className="hover:text-white transition-colors"
                                 >
-                                    hello@example.com
+                                    thekshitizrai@gmail.com
                                 </a>
                             </li>
                             <li>
                                 <a
-                                    href="tel:+1234567890"
+                                    href="tel:+977-9818180198"
                                     className="hover:text-white transition-colors"
                                 >
-                                    +1 (234) 567-890
+                                    +977-9818180198
                                 </a>
                             </li>
                             <li>
-                                123 Street Name,
+                                Triyuga-10
                                 <br />
-                                City, Country
+                                Udayapur, Nepal
                             </li>
                         </ul>
                     </div>
