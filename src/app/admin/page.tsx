@@ -1,78 +1,127 @@
 'use client'
 
 import { useState, useEffect } from 'react'
-import { useSession } from 'next-auth/react'
 import { motion } from 'framer-motion'
 import {
-    ChartBarIcon,
+    UsersIcon,
     DocumentTextIcon,
     ChatBubbleLeftIcon,
-    UserGroupIcon,
+    EnvelopeIcon,
+    ChartBarIcon,
+    EyeIcon,
+    HeartIcon,
+    ArrowTrendingUpIcon,
 } from '@heroicons/react/24/outline'
+import { Line } from 'react-chartjs-2'
+import {
+    Chart as ChartJS,
+    CategoryScale,
+    LinearScale,
+    PointElement,
+    LineElement,
+    Title,
+    Tooltip,
+    Legend,
+} from 'chart.js'
+
+// Register ChartJS components
+ChartJS.register(
+    CategoryScale,
+    LinearScale,
+    PointElement,
+    LineElement,
+    Title,
+    Tooltip,
+    Legend
+)
 
 interface DashboardStats {
-    totalPosts: number
-    totalComments: number
-    totalUsers: number
-    viewsToday: number
-    viewsThisMonth: number
-}
-
-interface Post {
-    id: string
-    title: string
-    published: boolean
-    createdAt: string
-    author: {
-        name: string
+    stats: {
+        totalUsers: number
+        totalPosts: number
+        totalComments: number
+        totalMessages: number
+        totalViews: number
+        totalLikes: number
+        growthRate: number
     }
-}
-
-interface Comment {
-    id: string
-    content: string
-    approved: boolean
-    createdAt: string
-    author: {
+    recentMessages: Array<{
+        id: string
         name: string
-    }
-    post: {
+        email: string
+        subject: string
+        message: string
+        createdAt: string
+        status: string
+    }>
+    recentPosts: Array<{
+        id: string
         title: string
+        author: string
+        views: number
+        likes: number
+        createdAt: string
+    }>
+    analytics: {
+        views: number[]
+        likes: number[]
+        comments: number[]
+        dates: string[]
     }
 }
 
 export default function AdminDashboard() {
-    const { data: session } = useSession()
-    const [stats, setStats] = useState<DashboardStats | null>(null)
-    const [posts, setPosts] = useState<Post[]>([])
-    const [comments, setComments] = useState<Comment[]>([])
-    const [activeTab, setActiveTab] = useState<'posts' | 'comments'>('posts')
+    const [data, setData] = useState<DashboardStats | null>(null)
     const [isLoading, setIsLoading] = useState(true)
+    const [timeframe, setTimeframe] = useState<'week' | 'month' | 'year'>(
+        'week'
+    )
+
+    const chartData = {
+        labels: data?.analytics.dates || [],
+        datasets: [
+            {
+                label: 'Views',
+                data: data?.analytics.views || [],
+                borderColor: 'rgb(59, 130, 246)',
+                backgroundColor: 'rgba(59, 130, 246, 0.5)',
+            },
+            {
+                label: 'Likes',
+                data: data?.analytics.likes || [],
+                borderColor: 'rgb(239, 68, 68)',
+                backgroundColor: 'rgba(239, 68, 68, 0.5)',
+            },
+            {
+                label: 'Comments',
+                data: data?.analytics.comments || [],
+                borderColor: 'rgb(16, 185, 129)',
+                backgroundColor: 'rgba(16, 185, 129, 0.5)',
+            },
+        ],
+    }
+
+    const chartOptions = {
+        responsive: true,
+        plugins: {
+            legend: {
+                position: 'top' as const,
+            },
+            title: {
+                display: true,
+                text: 'Blog Performance',
+            },
+        },
+    }
 
     useEffect(() => {
-        const fetchDashboardData = async () => {
+        async function fetchDashboardData() {
             try {
-                const [statsRes, postsRes, commentsRes] = await Promise.all([
-                    fetch('/api/admin/stats'),
-                    fetch('/api/admin/posts'),
-                    fetch('/api/admin/comments'),
-                ])
-
-                if (!statsRes.ok || !postsRes.ok || !commentsRes.ok) {
-                    throw new Error('Failed to fetch dashboard data')
-                }
-
-                const [statsData, postsData, commentsData] = await Promise.all([
-                    statsRes.json(),
-                    postsRes.json(),
-                    commentsRes.json(),
-                ])
-
-                setStats(statsData)
-                setPosts(postsData.posts)
-                setComments(commentsData.comments)
+                const response = await fetch('/api/admin/dashboard')
+                const data = await response.json()
+                setData(data)
             } catch (error) {
-                console.error('Error fetching dashboard data:', error)
+                console.error('Failed to fetch dashboard data:', error)
             } finally {
                 setIsLoading(false)
             }
@@ -81,292 +130,200 @@ export default function AdminDashboard() {
         fetchDashboardData()
     }, [])
 
-    const handlePostPublish = async (postId: string, published: boolean) => {
-        try {
-            const response = await fetch(`/api/admin/posts/${postId}`, {
-                method: 'PATCH',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ published }),
-            })
-
-            if (!response.ok) throw new Error('Failed to update post')
-
-            setPosts((prevPosts) =>
-                prevPosts.map((post) =>
-                    post.id === postId ? { ...post, published } : post
-                )
-            )
-        } catch (error) {
-            console.error('Error updating post:', error)
-        }
-    }
-
-    const handleCommentApproval = async (
-        commentId: string,
-        approved: boolean
-    ) => {
-        try {
-            const response = await fetch(`/api/admin/comments/${commentId}`, {
-                method: 'PATCH',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ approved }),
-            })
-
-            if (!response.ok) throw new Error('Failed to update comment')
-
-            setComments((prevComments) =>
-                prevComments.map((comment) =>
-                    comment.id === commentId
-                        ? { ...comment, approved }
-                        : comment
-                )
-            )
-        } catch (error) {
-            console.error('Error updating comment:', error)
-        }
-    }
-
     if (isLoading) {
         return (
-            <div className="min-h-screen bg-gray-50 dark:bg-gray-900 flex items-center justify-center">
-                <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-black dark:border-white" />
+            <div className="flex items-center justify-center min-h-[60vh]">
+                <div className="animate-spin rounded-full h-32 w-32 border-t-2 border-b-2 border-gray-900" />
+            </div>
+        )
+    }
+
+    if (!data) {
+        return (
+            <div className="text-center text-gray-500 dark:text-gray-400">
+                Failed to load dashboard data
             </div>
         )
     }
 
     return (
-        <div className="min-h-screen bg-gray-50 dark:bg-gray-900">
-            <main className="max-w-7xl mx-auto py-6 sm:px-6 lg:px-8">
-                <div className="px-4 py-6 sm:px-0">
-                    <motion.h1
-                        initial={{ opacity: 0, y: 20 }}
-                        animate={{ opacity: 1, y: 0 }}
-                        className="text-3xl font-bold text-gray-900 dark:text-white"
-                    >
-                        Welcome back, {session?.user?.name}
-                    </motion.h1>
-
-                    {/* Stats Grid */}
-                    <motion.div
-                        initial={{ opacity: 0 }}
-                        animate={{ opacity: 1 }}
-                        transition={{ delay: 0.2 }}
-                        className="mt-8 grid grid-cols-1 gap-5 sm:grid-cols-2 lg:grid-cols-4"
-                    >
-                        <div className="bg-white dark:bg-gray-800 overflow-hidden shadow rounded-lg">
-                            <div className="p-5">
-                                <div className="flex items-center">
-                                    <div className="flex-shrink-0">
-                                        <DocumentTextIcon className="h-6 w-6 text-gray-400" />
-                                    </div>
-                                    <div className="ml-5 w-0 flex-1">
-                                        <dl>
-                                            <dt className="text-sm font-medium text-gray-500 dark:text-gray-400 truncate">
-                                                Total Posts
-                                            </dt>
-                                            <dd className="text-lg font-medium text-gray-900 dark:text-white">
-                                                {stats?.totalPosts}
-                                            </dd>
-                                        </dl>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-
-                        <div className="bg-white dark:bg-gray-800 overflow-hidden shadow rounded-lg">
-                            <div className="p-5">
-                                <div className="flex items-center">
-                                    <div className="flex-shrink-0">
-                                        <ChatBubbleLeftIcon className="h-6 w-6 text-gray-400" />
-                                    </div>
-                                    <div className="ml-5 w-0 flex-1">
-                                        <dl>
-                                            <dt className="text-sm font-medium text-gray-500 dark:text-gray-400 truncate">
-                                                Total Comments
-                                            </dt>
-                                            <dd className="text-lg font-medium text-gray-900 dark:text-white">
-                                                {stats?.totalComments}
-                                            </dd>
-                                        </dl>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-
-                        <div className="bg-white dark:bg-gray-800 overflow-hidden shadow rounded-lg">
-                            <div className="p-5">
-                                <div className="flex items-center">
-                                    <div className="flex-shrink-0">
-                                        <UserGroupIcon className="h-6 w-6 text-gray-400" />
-                                    </div>
-                                    <div className="ml-5 w-0 flex-1">
-                                        <dl>
-                                            <dt className="text-sm font-medium text-gray-500 dark:text-gray-400 truncate">
-                                                Total Users
-                                            </dt>
-                                            <dd className="text-lg font-medium text-gray-900 dark:text-white">
-                                                {stats?.totalUsers}
-                                            </dd>
-                                        </dl>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-
-                        <div className="bg-white dark:bg-gray-800 overflow-hidden shadow rounded-lg">
-                            <div className="p-5">
-                                <div className="flex items-center">
-                                    <div className="flex-shrink-0">
-                                        <ChartBarIcon className="h-6 w-6 text-gray-400" />
-                                    </div>
-                                    <div className="ml-5 w-0 flex-1">
-                                        <dl>
-                                            <dt className="text-sm font-medium text-gray-500 dark:text-gray-400 truncate">
-                                                Views Today
-                                            </dt>
-                                            <dd className="text-lg font-medium text-gray-900 dark:text-white">
-                                                {stats?.viewsToday}
-                                            </dd>
-                                        </dl>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                    </motion.div>
-
-                    {/* Tabs */}
-                    <div className="mt-8">
-                        <div className="border-b border-gray-200 dark:border-gray-700">
-                            <nav className="-mb-px flex">
-                                <button
-                                    onClick={() => setActiveTab('posts')}
-                                    className={`${
-                                        activeTab === 'posts'
-                                            ? 'border-black dark:border-white text-black dark:text-white'
-                                            : 'border-transparent text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-300 hover:border-gray-300'
-                                    } w-1/4 py-4 px-1 text-center border-b-2 font-medium text-sm`}
-                                >
-                                    Posts
-                                </button>
-                                <button
-                                    onClick={() => setActiveTab('comments')}
-                                    className={`${
-                                        activeTab === 'comments'
-                                            ? 'border-black dark:border-white text-black dark:text-white'
-                                            : 'border-transparent text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-300 hover:border-gray-300'
-                                    } w-1/4 py-4 px-1 text-center border-b-2 font-medium text-sm`}
-                                >
-                                    Comments
-                                </button>
-                            </nav>
-                        </div>
-
-                        {/* Content */}
-                        <div className="mt-8">
-                            {activeTab === 'posts' ? (
-                                <div className="bg-white dark:bg-gray-800 shadow overflow-hidden sm:rounded-md">
-                                    <ul className="divide-y divide-gray-200 dark:divide-gray-700">
-                                        {posts.map((post) => (
-                                            <li key={post.id}>
-                                                <div className="px-4 py-4 flex items-center justify-between sm:px-6">
-                                                    <div className="min-w-0 flex-1">
-                                                        <h3 className="text-sm font-medium text-gray-900 dark:text-white truncate">
-                                                            {post.title}
-                                                        </h3>
-                                                        <p className="mt-1 text-sm text-gray-500 dark:text-gray-400">
-                                                            By{' '}
-                                                            {post.author.name}{' '}
-                                                            on{' '}
-                                                            {new Date(
-                                                                post.createdAt
-                                                            ).toLocaleDateString()}
-                                                        </p>
-                                                    </div>
-                                                    <div className="ml-4 flex-shrink-0">
-                                                        <button
-                                                            onClick={() =>
-                                                                handlePostPublish(
-                                                                    post.id,
-                                                                    !post.published
-                                                                )
-                                                            }
-                                                            className={`${
-                                                                post.published
-                                                                    ? 'bg-green-100 text-green-800 dark:bg-green-800 dark:text-green-100'
-                                                                    : 'bg-yellow-100 text-yellow-800 dark:bg-yellow-800 dark:text-yellow-100'
-                                                            } px-2 py-1 text-xs font-medium rounded-full`}
-                                                        >
-                                                            {post.published
-                                                                ? 'Published'
-                                                                : 'Draft'}
-                                                        </button>
-                                                    </div>
-                                                </div>
-                                            </li>
-                                        ))}
-                                    </ul>
-                                </div>
-                            ) : (
-                                <div className="bg-white dark:bg-gray-800 shadow overflow-hidden sm:rounded-md">
-                                    <ul className="divide-y divide-gray-200 dark:divide-gray-700">
-                                        {comments.map((comment) => (
-                                            <li key={comment.id}>
-                                                <div className="px-4 py-4 sm:px-6">
-                                                    <div className="flex items-center justify-between">
-                                                        <p className="text-sm font-medium text-gray-900 dark:text-white truncate">
-                                                            {
-                                                                comment.author
-                                                                    .name
-                                                            }{' '}
-                                                            on{' '}
-                                                            {comment.post.title}
-                                                        </p>
-                                                        <div className="ml-2 flex-shrink-0 flex">
-                                                            <button
-                                                                onClick={() =>
-                                                                    handleCommentApproval(
-                                                                        comment.id,
-                                                                        !comment.approved
-                                                                    )
-                                                                }
-                                                                className={`${
-                                                                    comment.approved
-                                                                        ? 'bg-green-100 text-green-800 dark:bg-green-800 dark:text-green-100'
-                                                                        : 'bg-red-100 text-red-800 dark:bg-red-800 dark:text-red-100'
-                                                                } px-2 py-1 text-xs font-medium rounded-full`}
-                                                            >
-                                                                {comment.approved
-                                                                    ? 'Approved'
-                                                                    : 'Pending'}
-                                                            </button>
-                                                        </div>
-                                                    </div>
-                                                    <div className="mt-2 sm:flex sm:justify-between">
-                                                        <div className="sm:flex">
-                                                            <p className="text-sm text-gray-500 dark:text-gray-400">
-                                                                {
-                                                                    comment.content
-                                                                }
-                                                            </p>
-                                                        </div>
-                                                        <div className="mt-2 flex items-center text-sm text-gray-500 dark:text-gray-400 sm:mt-0">
-                                                            <p>
-                                                                {new Date(
-                                                                    comment.createdAt
-                                                                ).toLocaleDateString()}
-                                                            </p>
-                                                        </div>
-                                                    </div>
-                                                </div>
-                                            </li>
-                                        ))}
-                                    </ul>
-                                </div>
-                            )}
-                        </div>
-                    </div>
+        <div className="space-y-6 p-6">
+            <div className="flex justify-between items-center">
+                <h1 className="text-2xl font-bold text-gray-900 dark:text-white">
+                    Dashboard Overview
+                </h1>
+                <div className="flex gap-2">
+                    {['week', 'month', 'year'].map((period) => (
+                        <button
+                            key={period}
+                            onClick={() => setTimeframe(period as any)}
+                            className={`px-4 py-2 rounded-lg text-sm font-medium ${
+                                timeframe === period
+                                    ? 'bg-blue-600 text-white'
+                                    : 'bg-gray-100 text-gray-600 hover:bg-gray-200 dark:bg-gray-800 dark:text-gray-300'
+                            }`}
+                        >
+                            {period.charAt(0).toUpperCase() + period.slice(1)}
+                        </button>
+                    ))}
                 </div>
-            </main>
+            </div>
+
+            {/* Stats Grid */}
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+                <StatCard
+                    title="Total Views"
+                    value={data?.stats.totalViews || 0}
+                    change="+12.5%"
+                    icon={EyeIcon}
+                    color="blue"
+                />
+                <StatCard
+                    title="Total Likes"
+                    value={data?.stats.totalLikes || 0}
+                    change="+8.2%"
+                    icon={HeartIcon}
+                    color="red"
+                />
+                <StatCard
+                    title="Total Posts"
+                    value={data?.stats.totalPosts || 0}
+                    change="+5.7%"
+                    icon={DocumentTextIcon}
+                    color="green"
+                />
+                <StatCard
+                    title="Growth Rate"
+                    value={`${data?.stats.growthRate || 0}%`}
+                    change="+2.3%"
+                    icon={ArrowTrendingUpIcon}
+                    color="purple"
+                />
+            </div>
+
+            {/* Analytics Chart */}
+            <div className="bg-white dark:bg-gray-800 rounded-lg shadow-md p-6">
+                <Line options={chartOptions} data={chartData} />
+            </div>
+
+            {/* Recent Activity */}
+            <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+                <RecentPosts posts={data?.recentPosts || []} />
+                <RecentMessages messages={data?.recentMessages || []} />
+            </div>
+        </div>
+    )
+}
+
+function StatCard({
+    title,
+    value,
+    change,
+    icon: Icon,
+    color,
+}: {
+    title: string
+    value: number
+    change: string
+    icon: any
+    color: string
+}) {
+    return (
+        <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            className="bg-white dark:bg-gray-800 rounded-lg shadow-md p-6"
+        >
+            <div className="flex items-center">
+                <div
+                    className={`p-3 rounded-full bg-${color}-100 text-${color}-600`}
+                >
+                    <Icon className="w-6 h-6" />
+                </div>
+                <div className="ml-4">
+                    <h2 className="text-sm font-medium text-gray-600 dark:text-gray-400">
+                        {title}
+                    </h2>
+                    <p className="text-2xl font-semibold text-gray-900 dark:text-white">
+                        {value.toLocaleString()}
+                    </p>
+                    <p className="text-sm text-gray-500">{change}</p>
+                </div>
+            </div>
+        </motion.div>
+    )
+}
+
+function RecentMessages({ messages }: { messages: any[] }) {
+    return (
+        <div className="bg-white dark:bg-gray-800 rounded-lg shadow-md p-6">
+            <h2 className="text-lg font-semibold text-gray-900 dark:text-white mb-4">
+                Recent Messages
+            </h2>
+            {messages.length === 0 ? (
+                <p className="text-gray-500 dark:text-gray-400">
+                    No recent messages
+                </p>
+            ) : (
+                <div className="space-y-4">
+                    {messages.map((message) => (
+                        <div
+                            key={message.id}
+                            className="flex items-start justify-between"
+                        >
+                            <div>
+                                <p className="text-sm text-gray-900 dark:text-white">
+                                    {message.content}
+                                </p>
+                                <p className="text-sm text-gray-500">
+                                    from {message.name}
+                                </p>
+                            </div>
+                            <span className="text-sm text-gray-500">
+                                {new Date(
+                                    message.createdAt
+                                ).toLocaleDateString()}
+                            </span>
+                        </div>
+                    ))}
+                </div>
+            )}
+        </div>
+    )
+}
+
+function RecentPosts({ posts }: { posts: any[] }) {
+    return (
+        <div className="bg-white dark:bg-gray-800 rounded-lg shadow-md p-6">
+            <h2 className="text-lg font-semibold text-gray-900 dark:text-white mb-4">
+                Recent Posts
+            </h2>
+            {posts.length === 0 ? (
+                <p className="text-gray-500 dark:text-gray-400">
+                    No recent posts
+                </p>
+            ) : (
+                <div className="space-y-4">
+                    {posts.map((post) => (
+                        <div
+                            key={post.id}
+                            className="flex items-center justify-between"
+                        >
+                            <div>
+                                <h3 className="text-sm font-medium text-gray-900 dark:text-white">
+                                    {post.title}
+                                </h3>
+                                <p className="text-sm text-gray-500">
+                                    by {post.author}
+                                </p>
+                            </div>
+                            <span className="text-sm text-gray-500">
+                                {new Date(post.createdAt).toLocaleDateString()}
+                            </span>
+                        </div>
+                    ))}
+                </div>
+            )}
         </div>
     )
 }

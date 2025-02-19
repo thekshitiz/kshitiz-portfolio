@@ -52,13 +52,12 @@ type SubjectType = (typeof subjectTypes)[number]['value'] | string
 interface FormData {
     name: string
     email: string
-    subject: SubjectType
-    customSubject: string
+    subject: string
     message: string
 }
 
 export default function Contact() {
-    const [formData, setFormData] = useState({
+    const [formData, setFormData] = useState<FormData>({
         name: '',
         email: '',
         subject: '',
@@ -81,11 +80,24 @@ export default function Contact() {
             message: '',
         })
 
+        // Log the form data before sending
+        console.log('Submitting form data:', formData)
+
         try {
             const response = await fetch('/api/contact', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify(formData),
+                body: JSON.stringify({
+                    name: formData.name,
+                    email: formData.email,
+                    subject:
+                        formData.subject === 'other'
+                            ? formData.customSubject
+                            : subjectTypes.find(
+                                  (type) => type.value === formData.subject
+                              )?.label || formData.subject,
+                    message: formData.message,
+                }),
             })
 
             const data = await response.json()

@@ -1,8 +1,16 @@
 import { NextResponse } from 'next/server'
 import type { NextRequest } from 'next/server'
+import { getToken } from 'next-auth/jwt'
 
-export function middleware(request: NextRequest) {
-    // Add your middleware logic here
+export async function middleware(request: NextRequest) {
+    if (request.nextUrl.pathname.startsWith('/admin')) {
+        const session = await getToken({ req: request })
+
+        if (!session || session.role !== 'ADMIN') {
+            return NextResponse.redirect(new URL('/auth/signin', request.url))
+        }
+    }
+
     return NextResponse.next()
 }
 
@@ -17,5 +25,6 @@ export const config = {
          * - favicon.ico (favicon file)
          */
         '/((?!api|_next/static|_next/image|favicon.ico).*)',
+        '/admin/:path*',
     ],
 }
