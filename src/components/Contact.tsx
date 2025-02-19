@@ -54,6 +54,7 @@ interface FormData {
     email: string
     subject: string
     message: string
+    customSubject?: string
 }
 
 export default function Contact() {
@@ -92,7 +93,7 @@ export default function Contact() {
                     email: formData.email,
                     subject:
                         formData.subject === 'other'
-                            ? formData.customSubject
+                            ? formData.customSubject || 'Other'
                             : subjectTypes.find(
                                   (type) => type.value === formData.subject
                               )?.label || formData.subject,
@@ -275,7 +276,9 @@ export default function Contact() {
                                             </div>
                                             <input
                                                 type="text"
-                                                value={formData.customSubject}
+                                                value={
+                                                    formData.customSubject || ''
+                                                }
                                                 onChange={(e) =>
                                                     setFormData({
                                                         ...formData,

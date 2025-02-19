@@ -1,10 +1,13 @@
 /** @type {import('next').NextConfig} */
 const nextConfig = {
+    reactStrictMode: true,
+    swcMinify: true,
     images: {
         formats: ['image/avif', 'image/webp'],
         deviceSizes: [640, 750, 828, 1080, 1200, 1920, 2048, 3840],
         minimumCacheTTL: 60,
-        domains: ['images.unsplash.com'],
+        domains: ['images.unsplash.com', 'placeholder.com'],
+        unoptimized: process.env.NODE_ENV === 'development',
     },
     experimental: {
         optimizeCss: true,
@@ -42,6 +45,10 @@ const nextConfig = {
                     },
                 },
             }
+        }
+        config.experiments = {
+            ...config.experiments,
+            topLevelAwait: true,
         }
         return config
     },

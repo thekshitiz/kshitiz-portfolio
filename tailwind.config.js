@@ -40,6 +40,9 @@ module.exports = {
                     },
                 },
             },
+            gradientColorStops: (theme) => ({
+                // ... existing gradients ...
+            }),
         },
     },
     plugins: [

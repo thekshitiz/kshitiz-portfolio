@@ -1,30 +1,25 @@
 // This is the main layout file that wraps all pages
 // Note: This file must be a Server Component to export metadata
 
-import { Inter, JetBrains_Mono } from 'next/font/google'
-import Header from '@/components/Header'
-import Footer from '@/components/Footer'
+import { Inter } from 'next/font/google'
+import { Providers } from '@/components/Providers'
+import { Analytics } from '@/components/Analytics'
 import '@/styles/globals.css'
 import { Metadata } from 'next'
-import Providers from '@/components/Providers'
-import SkipToContent from '@/components/SkipToContent'
 import { siteConfig } from '@/lib/constants/config'
 
 // Configure fonts
-const inter = Inter({ subsets: ['latin'] }) // Main font
-const mono = JetBrains_Mono({
+const inter = Inter({
     subsets: ['latin'],
-    variable: '--font-mono', // Makes font available as CSS variable
+    display: 'swap',
+    variable: '--font-inter',
 })
 
 // SEO and social sharing metadata
 export const metadata: Metadata = {
     // Basic metadata
-    title: {
-        default: siteConfig.name, // Default page title
-        template: `%s | ${siteConfig.name}`, // Template for other pages
-    },
-    description: siteConfig.description,
+    title: 'Kshitiz Portfolio',
+    description: 'Personal portfolio and blog website',
 
     // Open Graph metadata (for social sharing)
     openGraph: {
@@ -65,7 +60,7 @@ export default function RootLayout({
     children: React.ReactNode
 }) {
     return (
-        <html lang="en" suppressHydrationWarning>
+        <html lang="en" className={inter.variable} suppressHydrationWarning>
             <head>
                 {/* Preload critical resources */}
                 <link
@@ -77,15 +72,10 @@ export default function RootLayout({
                 />
                 <link rel="preload" href="/hero-image.jpg" as="image" />
             </head>
-            <body
-                // Apply fonts and theme classes
-                className={`${inter.className} ${mono.variable} min-h-screen bg-white dark:bg-gray-900 antialiased`}
-            >
+            <body className="bg-white dark:bg-gray-900 antialiased">
                 <Providers>
-                    <SkipToContent /> {/* Accessibility feature */}
-                    <Header /> {/* Navigation */}
-                    <main id="main-content">{children}</main>
-                    <Footer /> {/* Footer */}
+                    {children}
+                    <Analytics />
                 </Providers>
             </body>
         </html>

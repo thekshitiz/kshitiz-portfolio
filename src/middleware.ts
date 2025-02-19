@@ -1,30 +1,36 @@
 import { NextResponse } from 'next/server'
 import type { NextRequest } from 'next/server'
 import { getToken } from 'next-auth/jwt'
+import type { NextRequestWithAuth } from 'next-auth/middleware'
+import { db } from '@/lib/db'
 
-export async function middleware(request: NextRequest) {
-    if (request.nextUrl.pathname.startsWith('/admin')) {
-        const session = await getToken({ req: request })
+export default async function middleware(req: NextRequestWithAuth) {
+    try {
+        await db.$connect()
+        const token = await getToken({ req })
+        const isAuthenticated = !!token
 
-        if (!session || session.role !== 'ADMIN') {
-            return NextResponse.redirect(new URL('/auth/signin', request.url))
+        if (req.nextUrl.pathname.startsWith('/dashboard')) {
+            if (!isAuthenticated) {
+                const redirectUrl = new URL('/auth/signin', req.url)
+                redirectUrl.searchParams.set(
+                    'callbackUrl',
+                    req.nextUrl.pathname
+                )
+                return NextResponse.redirect(redirectUrl)
+            }
         }
-    }
 
-    return NextResponse.next()
+        return NextResponse.next()
+    } catch (error) {
+        console.error('Middleware error:', error)
+        return NextResponse.redirect(new URL('/error', req.url))
+    } finally {
+        await db.$disconnect()
+    }
 }
 
 // Optional: Configure middleware to run on specific paths
 export const config = {
-    matcher: [
-        /*
-         * Match all request paths except for the ones starting with:
-         * - api (API routes)
-         * - _next/static (static files)
-         * - _next/image (image optimization files)
-         * - favicon.ico (favicon file)
-         */
-        '/((?!api|_next/static|_next/image|favicon.ico).*)',
-        '/admin/:path*',
-    ],
+    matcher: ['/dashboard/:path*'],
 }
