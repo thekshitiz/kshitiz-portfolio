@@ -6,6 +6,7 @@ module.exports = {
         './src/pages/**/*.{js,ts,jsx,tsx,mdx}',
         './src/components/**/*.{js,ts,jsx,tsx,mdx}',
         './src/app/**/*.{js,ts,jsx,tsx,mdx}',
+        './components/**/*.{js,ts,jsx,tsx,mdx}',
     ],
     darkMode: 'class',
     future: {
@@ -19,6 +20,25 @@ module.exports = {
             },
             animation: {
                 'spin-slow': 'spin 20s linear infinite',
+            },
+            typography: {
+                DEFAULT: {
+                    css: {
+                        maxWidth: '65ch',
+                        color: 'inherit',
+                        a: {
+                            color: 'inherit',
+                            textDecoration: 'none',
+                            fontWeight: '500',
+                        },
+                        strong: {
+                            color: 'inherit',
+                        },
+                        code: {
+                            color: 'inherit',
+                        },
+                    },
+                },
             },
         },
     },
