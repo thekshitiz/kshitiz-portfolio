@@ -1,11 +1,16 @@
 'use client'
 
-import { ThemeProvider } from 'next-themes'
+import { ThemeProvider } from '@/components/ThemeProvider'
+import ErrorBoundary from '@/components/ErrorBoundary'
+import Analytics from '@/components/Analytics'
 
 export default function Providers({ children }: { children: React.ReactNode }) {
     return (
-        <ThemeProvider attribute="class" defaultTheme="system" enableSystem>
-            {children}
+        <ThemeProvider>
+            <ErrorBoundary>
+                {children}
+                <Analytics />
+            </ErrorBoundary>
         </ThemeProvider>
     )
-} 
+}

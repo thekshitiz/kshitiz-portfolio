@@ -4,8 +4,14 @@ import { useState, useMemo } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
 import { projects } from '@/lib/projects'
 import ProjectCard from '@/components/ProjectCard'
+import { generateMetadata } from '@/lib/metadata'
 
 const ITEMS_PER_PAGE = 6
+
+export const metadata = generateMetadata({
+    title: 'Projects | Your Name',
+    description: 'Explore my portfolio of projects and work.',
+})
 
 export default function Projects() {
     const [searchTerm, setSearchTerm] = useState('')

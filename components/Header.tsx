@@ -2,6 +2,7 @@
 
 import Link from 'next/link'
 import DarkModeToggle from './DarkModeToggle'
+import MobileNav from './MobileNav'
 import { motion } from 'framer-motion'
 
 export default function Header() {
@@ -60,6 +61,7 @@ export default function Header() {
                         <motion.div
                             whileHover={{ scale: 1.05 }}
                             whileTap={{ scale: 0.95 }}
+                            className="hidden md:block"
                         >
                             <Link
                                 href="/resume"
@@ -68,6 +70,7 @@ export default function Header() {
                                 Resume
                             </Link>
                         </motion.div>
+                        <MobileNav />
                     </div>
                 </div>
             </div>

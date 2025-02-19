@@ -6,8 +6,7 @@ import Header from '@/components/Header'
 import Footer from '@/components/Footer'
 import '@/styles/globals.css'
 import { Metadata } from 'next'
-import { ThemeProvider } from '@/components/ThemeProvider'
-import ErrorBoundary from '@/components/ErrorBoundary'
+import Providers from '@/components/Providers'
 import SkipToContent from '@/components/SkipToContent'
 import { siteConfig } from '@/lib/constants/config'
 
@@ -82,14 +81,12 @@ export default function RootLayout({
                 // Apply fonts and theme classes
                 className={`${inter.className} ${mono.variable} min-h-screen bg-white dark:bg-gray-900 antialiased`}
             >
-                <ThemeProvider>
-                    <ErrorBoundary>
-                        <SkipToContent /> {/* Accessibility feature */}
-                        <Header /> {/* Navigation */}
-                        <main id="main-content">{children}</main>
-                        <Footer /> {/* Footer */}
-                    </ErrorBoundary>
-                </ThemeProvider>
+                <Providers>
+                    <SkipToContent /> {/* Accessibility feature */}
+                    <Header /> {/* Navigation */}
+                    <main id="main-content">{children}</main>
+                    <Footer /> {/* Footer */}
+                </Providers>
             </body>
         </html>
     )
