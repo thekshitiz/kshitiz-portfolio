@@ -1,198 +1,140 @@
 'use client'
 
-import Link from 'next/link'
-import Image from 'next/image'
 import { motion } from 'framer-motion'
+import { useEffect, useRef, useState } from 'react'
 import { TypeAnimation } from 'react-type-animation'
-import CircularText from './CircularText'
-
-const techStack = ['React', 'Next.js', 'TypeScript', 'Node.js', 'Tailwind CSS']
+import { useTheme } from 'next-themes'
 
 export default function Hero() {
+    const [mousePosition, setMousePosition] = useState({ x: 0, y: 0 })
+    const heroRef = useRef<HTMLDivElement>(null)
+    const { theme } = useTheme()
+
+    useEffect(() => {
+        const handleMouseMove = (e: MouseEvent) => {
+            if (heroRef.current) {
+                const { left, top } = heroRef.current.getBoundingClientRect()
+                setMousePosition({
+                    x: e.clientX - left,
+                    y: e.clientY - top,
+                })
+            }
+        }
+
+        window.addEventListener('mousemove', handleMouseMove)
+        return () => window.removeEventListener('mousemove', handleMouseMove)
+    }, [])
+
     return (
-        <div
-            id="home"
-            className="relative min-h-screen bg-gray-50 dark:bg-gray-900"
+        <motion.div
+            ref={heroRef}
+            className="relative min-h-screen flex items-center justify-center"
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            transition={{ duration: 0.8 }}
         >
-            {/* Background Image */}
-            <div className="absolute inset-0 z-0">
-                <Image
-                    src="/hero-background.jpg"
-                    alt="Background"
-                    fill
-                    priority
-                    className="object-cover object-center opacity-20 dark:opacity-10"
-                    quality={100}
-                />
-            </div>
+            {/* Background gradient */}
+            <div
+                className="absolute inset-0 transition-opacity duration-300"
+                style={{
+                    background: `
+                        radial-gradient(600px at ${mousePosition.x}px ${mousePosition.y}px, 
+                        ${
+                            theme === 'dark'
+                                ? 'rgba(29, 78, 216, 0.15)'
+                                : 'rgba(29, 78, 216, 0.1)'
+                        }, transparent 80%)
+                    `,
+                }}
+            />
 
-            <div className="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-20 pb-24 sm:pt-32 sm:pb-40">
-                <div className="max-w-3xl">
+            {/* Main content */}
+            <div className="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+                <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
+                    {/* Text content */}
                     <motion.div
-                        initial={{ opacity: 0, y: 50 }}
+                        initial={{ opacity: 0, y: 20 }}
                         animate={{ opacity: 1, y: 0 }}
-                        transition={{
-                            duration: 0.8,
-                            type: 'spring',
-                            stiffness: 100,
-                        }}
-                        className="space-y-8"
+                        transition={{ duration: 0.8, delay: 0.2 }}
+                        className="text-left space-y-8"
                     >
-                        {/* Enhanced Animated Introduction */}
-                        <div className="space-y-2">
-                            <motion.h2
-                                initial={{ opacity: 0, x: -50 }}
-                                animate={{ opacity: 1, x: 0 }}
-                                transition={{
-                                    duration: 0.8,
-                                    type: 'spring',
-                                    stiffness: 100,
-                                }}
-                                className="text-2xl text-gray-600 dark:text-gray-400"
-                            >
-                                Hi, I'm
-                            </motion.h2>
-                            <motion.h1
-                                initial={{ opacity: 0, scale: 0.5 }}
-                                animate={{ opacity: 1, scale: 1 }}
-                                transition={{
-                                    duration: 0.8,
-                                    type: 'spring',
-                                    stiffness: 100,
-                                }}
-                                className="text-5xl sm:text-6xl md:text-7xl font-bold text-gray-900 dark:text-white"
-                            >
+                        <h2 className="text-sm uppercase tracking-[0.2em] text-gray-500 dark:text-gray-400 font-medium">
+                            Welcome to my portfolio
+                        </h2>
+                        <h1 className="text-4xl sm:text-5xl md:text-6xl font-bold text-gray-900 dark:text-white leading-tight">
+                            Hi, I'm{' '}
+                            <span className="text-transparent bg-clip-text bg-gradient-to-r from-blue-600 to-violet-600 dark:from-blue-400 dark:to-violet-400">
                                 Kshitiz
-                            </motion.h1>
-                            <div className="h-16 sm:h-20">
-                                <TypeAnimation
-                                    sequence={[
-                                        'A Full Stack Developer',
-                                        2000,
-                                        'A UI/UX Enthusiast',
-                                        2000,
-                                        'A Problem Solver',
-                                        2000,
-                                        'A Tech Innovator',
-                                        2000,
-                                    ]}
-                                    wrapper="h2"
-                                    speed={50}
-                                    repeat={Infinity}
-                                    className="text-2xl sm:text-3xl text-gray-600 dark:text-gray-400"
-                                />
-                            </div>
+                            </span>
+                        </h1>
+                        <div className="text-xl sm:text-2xl text-gray-600 dark:text-gray-300 h-[60px]">
+                            <TypeAnimation
+                                sequence={[
+                                    'Building digital experiences',
+                                    2000,
+                                    'Crafting modern interfaces',
+                                    2000,
+                                    'Creating innovative solutions',
+                                    2000,
+                                ]}
+                                wrapper="span"
+                                speed={50}
+                                repeat={Infinity}
+                                className="font-light"
+                            />
                         </div>
-
-                        {/* Enhanced Description Animation */}
-                        <motion.p
-                            initial={{ opacity: 0, y: 20 }}
-                            animate={{ opacity: 1, y: 0 }}
-                            transition={{
-                                duration: 0.8,
-                                delay: 0.4,
-                                type: 'spring',
-                                stiffness: 100,
-                            }}
-                            className="text-lg sm:text-xl text-gray-600 dark:text-gray-400 max-w-2xl"
-                        >
-                            Crafting beautiful and functional digital
-                            experiences that leave a lasting impression.
-                        </motion.p>
-
-                        {/* Enhanced CTA Buttons Animation */}
                         <motion.div
+                            className="flex flex-wrap gap-4"
                             initial={{ opacity: 0, y: 20 }}
                             animate={{ opacity: 1, y: 0 }}
-                            transition={{
-                                duration: 0.8,
-                                delay: 0.6,
-                                type: 'spring',
-                                stiffness: 100,
-                            }}
-                            className="flex flex-col sm:flex-row gap-4"
+                            transition={{ duration: 0.8, delay: 0.4 }}
                         >
-                            <Link
-                                href="/#portfolio"
-                                className="inline-flex items-center justify-center px-8 py-3 text-base font-medium rounded-md text-white bg-black hover:bg-gray-900 dark:bg-white dark:text-black dark:hover:bg-gray-100 transition-colors"
+                            <a
+                                href="#portfolio"
+                                className="group relative px-8 py-3 rounded-full overflow-hidden"
                             >
-                                View Projects
-                            </Link>
-                            <Link
-                                href="/#contact"
-                                className="inline-flex items-center justify-center px-8 py-3 text-base font-medium rounded-md text-gray-700 dark:text-gray-200 bg-white dark:bg-gray-800 hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors border border-gray-300 dark:border-gray-600"
+                                <div className="absolute inset-0 bg-gradient-to-r from-blue-600 to-violet-600 transition-all duration-300 ease-out group-hover:scale-105" />
+                                <span className="relative text-white font-medium">
+                                    View Projects
+                                </span>
+                            </a>
+                            <a
+                                href="#contact"
+                                className="group relative px-8 py-3 rounded-full overflow-hidden"
                             >
-                                Contact Me
-                            </Link>
+                                <div className="absolute inset-0 border border-gray-200 dark:border-gray-700 rounded-full transition-all duration-300 ease-out group-hover:border-blue-500 dark:group-hover:border-blue-400" />
+                                <span className="relative text-gray-900 dark:text-white font-medium">
+                                    Contact Me
+                                </span>
+                            </a>
                         </motion.div>
+                    </motion.div>
 
-                        {/* Enhanced Tech Stack Animation */}
-                        <div className="space-y-4">
-                            <motion.p
-                                initial={{ opacity: 0, y: 20 }}
-                                animate={{ opacity: 1, y: 0 }}
-                                transition={{
-                                    duration: 0.8,
-                                    delay: 0.8,
-                                    type: 'spring',
-                                    stiffness: 100,
-                                }}
-                                className="text-sm font-medium text-gray-600 dark:text-gray-400"
-                            >
-                                Tech Stack
-                            </motion.p>
-                            <motion.div
-                                initial="hidden"
-                                animate="visible"
-                                variants={{
-                                    visible: {
-                                        transition: {
-                                            staggerChildren: 0.15,
-                                            delayChildren: 1,
-                                        },
-                                    },
-                                }}
-                                className="flex flex-wrap gap-4"
-                            >
-                                {techStack.map((tech, index) => (
-                                    <motion.span
-                                        key={tech}
-                                        variants={{
-                                            hidden: {
-                                                opacity: 0,
-                                                y: 50,
-                                                scale: 0.3,
-                                                rotate: -180,
-                                            },
-                                            visible: {
-                                                opacity: 1,
-                                                y: 0,
-                                                scale: 1,
-                                                rotate: 0,
-                                            },
-                                        }}
-                                        transition={{
-                                            type: 'spring',
-                                            stiffness: 200,
-                                            damping: 20,
-                                        }}
-                                        whileHover={{
-                                            scale: 1.1,
-                                            rotate: 5,
-                                            transition: { duration: 0.2 },
-                                        }}
-                                        className="px-4 py-2 bg-white dark:bg-gray-800 rounded-md text-sm font-medium text-gray-700 dark:text-gray-300 shadow-sm"
-                                    >
-                                        {tech}
-                                    </motion.span>
-                                ))}
-                            </motion.div>
+                    {/* Visual element */}
+                    <motion.div
+                        initial={{ opacity: 0, scale: 0.8 }}
+                        animate={{ opacity: 1, scale: 1 }}
+                        transition={{ duration: 1, delay: 0.3 }}
+                        className="relative hidden lg:block"
+                    >
+                        <div className="relative w-full aspect-square">
+                            <div className="absolute inset-0 bg-gradient-to-br from-blue-500/20 to-violet-500/20 dark:from-blue-400/10 dark:to-violet-400/10 rounded-full animate-pulse" />
+                            <div className="absolute inset-4 bg-gradient-to-br from-blue-500/30 to-violet-500/30 dark:from-blue-400/20 dark:to-violet-400/20 rounded-full animate-pulse animation-delay-2000" />
+                            <div className="absolute inset-8 bg-gradient-to-br from-blue-500/40 to-violet-500/40 dark:from-blue-400/30 dark:to-violet-400/30 rounded-full animate-pulse animation-delay-4000" />
                         </div>
                     </motion.div>
                 </div>
             </div>
 
-            <CircularText />
-        </div>
+            {/* Scroll indicator */}
+            <motion.div
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                transition={{ duration: 1, delay: 1 }}
+                className="absolute bottom-12 left-1/2 -translate-x-1/2"
+            >
+                <div className="w-[1px] h-24 bg-gradient-to-b from-transparent via-gray-400 to-transparent animate-pulse" />
+            </motion.div>
+        </motion.div>
     )
 }
