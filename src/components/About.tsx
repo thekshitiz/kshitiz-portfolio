@@ -66,9 +66,9 @@ export default function About() {
 
         useEffect(() => {
             const controls = animate(count, number, {
-                duration: 2.5, // Slower animation
-                ease: [0.32, 0.72, 0, 1], // Custom easing
-                delay: 0.5, // Initial delay
+                duration: 4, // Increased duration to 4 seconds
+                ease: [0.12, 0, 0.39, 0], // Custom easing for slower start
+                delay: 1.5, // Added delay before starting
             })
 
             return controls.stop
@@ -78,8 +78,8 @@ export default function About() {
             <motion.div
                 initial={{ opacity: 0 }}
                 whileInView={{ opacity: 1 }}
-                transition={{ duration: 1 }}
-                className="flex items-baseline"
+                transition={{ duration: 1.5, delay: 0.5 }}
+                className="flex items-baseline justify-center"
             >
                 <motion.span>{rounded}</motion.span>
                 <span className="ml-1">+</span>
@@ -102,7 +102,7 @@ export default function About() {
                         className="w-full h-full object-cover"
                         autoPlay
                         controls
-                        src="/resume-video.mp4"
+                        src="/resume-vid.mp4"
                     />
                 ) : (
                     <Image
@@ -188,6 +188,18 @@ export default function About() {
             </motion.button>
         </div>
     )
+
+    // Update the stats section animation timing
+    const statsContainerVariants = {
+        hidden: { opacity: 0 },
+        visible: {
+            opacity: 1,
+            transition: {
+                staggerChildren: 0.5, // Increased delay between items
+                delayChildren: 0.8, // Delay before starting
+            },
+        },
+    }
 
     return (
         <section className="relative min-h-screen bg-white dark:bg-gray-900 py-24">
@@ -277,7 +289,7 @@ export default function About() {
 
                 {/* Skills Grid */}
                 <motion.div
-                    className="grid grid-cols-1 md:grid-cols-3 gap-8 mb-24"
+                    className="grid grid-cols-1 md:grid-cols-3 gap-8 mb-32" // Increased bottom margin
                     variants={containerVariants}
                     initial="hidden"
                     whileInView="visible"
@@ -336,9 +348,10 @@ export default function About() {
                 {/* Stats Grid with Counter Animation */}
                 <motion.div
                     className="max-w-5xl mx-auto"
-                    variants={containerVariants}
+                    variants={statsContainerVariants}
                     initial="hidden"
                     whileInView="visible"
+                    viewport={{ once: false }} // Allow animation to replay
                 >
                     <div className="grid grid-cols-2 md:grid-cols-4 gap-6">
                         {stats.map((stat, index) => (
@@ -357,8 +370,8 @@ export default function About() {
                                     initial={{ opacity: 0, scale: 0.5 }}
                                     whileInView={{ opacity: 1, scale: 1 }}
                                     transition={{
-                                        duration: 1.5,
-                                        delay: index * 0.2,
+                                        duration: 2,
+                                        delay: index * 0.3,
                                     }}
                                 >
                                     <Counter number={stat.number} />
