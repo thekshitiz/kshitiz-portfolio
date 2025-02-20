@@ -4,6 +4,7 @@
 import { Inter } from 'next/font/google'
 import { Providers } from '@/components/Providers'
 import { Analytics } from '@/components/Analytics'
+import { ClientLayout } from '@/components/ClientLayout'
 import '@/styles/globals.css'
 import { Metadata } from 'next'
 import { siteConfig } from '@/lib/constants/config'
@@ -74,8 +75,10 @@ export default function RootLayout({
             </head>
             <body className="bg-white dark:bg-gray-900 antialiased">
                 <Providers>
-                    {children}
-                    <Analytics />
+                    <ClientLayout>
+                        {children}
+                        <Analytics />
+                    </ClientLayout>
                 </Providers>
             </body>
         </html>
