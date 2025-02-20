@@ -55,7 +55,7 @@ export default function About() {
                     className="relative h-[400px] rounded-xl overflow-hidden"
                 >
                     <Image
-                        src="/about/profile.jpg"
+                        src="public/profile.png"
                         alt="Profile"
                         fill
                         className="object-cover"
