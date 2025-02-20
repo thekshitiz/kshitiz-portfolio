@@ -2,9 +2,9 @@
 // Note: This file must be a Server Component to export metadata
 
 import { Inter } from 'next/font/google'
+import ClientLayout from '@/components/ClientLayout'
 import { Providers } from '@/components/Providers'
 import { Analytics } from '@/components/Analytics'
-import { ClientLayout } from '@/components/ClientLayout'
 import '@/styles/globals.css'
 import { Metadata } from 'next'
 import { siteConfig } from '@/lib/constants/config'
@@ -18,9 +18,8 @@ const inter = Inter({
 
 // SEO and social sharing metadata
 export const metadata: Metadata = {
-    // Basic metadata
-    title: 'Kshitiz Portfolio',
-    description: 'Personal portfolio and blog website',
+    title: siteConfig.title,
+    description: siteConfig.description,
 
     // Open Graph metadata (for social sharing)
     openGraph: {
@@ -75,10 +74,8 @@ export default function RootLayout({
             </head>
             <body className="bg-white dark:bg-gray-900 antialiased">
                 <Providers>
-                    <ClientLayout>
-                        {children}
-                        <Analytics />
-                    </ClientLayout>
+                    <ClientLayout>{children}</ClientLayout>
+                    <Analytics />
                 </Providers>
             </body>
         </html>

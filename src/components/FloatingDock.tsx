@@ -5,6 +5,7 @@ import { motion, AnimatePresence } from 'framer-motion'
 import Link from 'next/link'
 import { usePathname } from 'next/navigation'
 import { Home, FolderOpen, User, Mail } from 'lucide-react'
+import { ReactNode } from 'react'
 
 const dockItems = [
     { name: 'Home', href: '/', icon: Home },
@@ -13,7 +14,11 @@ const dockItems = [
     { name: 'Contact', href: '/contact', icon: Mail },
 ]
 
-export function FloatingDock() {
+interface FloatingDockProps {
+    children?: ReactNode
+}
+
+export function FloatingDock({ children }: FloatingDockProps) {
     const [isVisible, setIsVisible] = useState(true)
     const [lastScrollY, setLastScrollY] = useState(0)
     const [hoveredItem, setHoveredItem] = useState<string | null>(null)
@@ -98,6 +103,7 @@ export function FloatingDock() {
                     )
                 })}
             </div>
+            {children}
         </motion.div>
     )
 }
