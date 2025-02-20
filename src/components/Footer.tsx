@@ -10,18 +10,24 @@ export default function Footer() {
     }
 
     return (
-        <footer className="relative bg-black text-white dark:bg-gray-900 pt-24 pb-12 overflow-hidden">
-            {/* Decorative Background Elements */}
-            <div className="absolute inset-0 overflow-hidden">
-                <div className="absolute -top-1/2 -right-1/4 w-96 h-96 bg-gradient-to-br from-purple-500/20 to-transparent rounded-full blur-3xl" />
-                <div className="absolute -bottom-1/2 -left-1/4 w-96 h-96 bg-gradient-to-tr from-blue-500/20 to-transparent rounded-full blur-3xl" />
+        <footer className="relative bg-gradient-to-b from-black to-gray-900 text-white pt-24 pb-12 overflow-hidden">
+            {/* Animated Background Elements */}
+            <div className="absolute inset-0 overflow-hidden pointer-events-none">
+                <div className="absolute -top-1/2 -right-1/4 w-96 h-96 bg-gradient-to-br from-purple-500/10 to-transparent rounded-full blur-3xl animate-pulse" />
+                <div className="absolute -bottom-1/2 -left-1/4 w-96 h-96 bg-gradient-to-tr from-blue-500/10 to-transparent rounded-full blur-3xl animate-pulse" />
+                <div className="absolute top-0 left-0 right-0 h-px bg-gradient-to-r from-transparent via-gray-500/20 to-transparent" />
             </div>
 
             {/* Main Footer Content */}
             <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
                 <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-12 mb-16">
                     {/* Branding Section */}
-                    <div className="space-y-6">
+                    <motion.div
+                        initial={{ opacity: 0, y: 20 }}
+                        whileInView={{ opacity: 1, y: 0 }}
+                        transition={{ duration: 0.5 }}
+                        className="space-y-6"
+                    >
                         <Link
                             href="/"
                             className="text-2xl font-bold tracking-tighter hover:text-gray-300 transition-colors"
@@ -34,73 +40,102 @@ export default function Footer() {
                         </p>
                         <div className="flex space-x-4">
                             {socialLinks.map((social) => (
-                                <a
+                                <motion.a
                                     key={social.name}
                                     href={social.href}
                                     target="_blank"
                                     rel="noopener noreferrer"
                                     className="text-gray-400 hover:text-white transition-colors"
+                                    whileHover={{ scale: 1.1, y: -2 }}
+                                    whileTap={{ scale: 0.95 }}
                                 >
                                     <social.icon className="w-6 h-6" />
                                     <span className="sr-only">
                                         {social.name}
                                     </span>
-                                </a>
+                                </motion.a>
                             ))}
                         </div>
-                    </div>
+                    </motion.div>
 
                     {/* Quick Links */}
-                    <div>
+                    <motion.div
+                        initial={{ opacity: 0, y: 20 }}
+                        whileInView={{ opacity: 1, y: 0 }}
+                        transition={{ duration: 0.5, delay: 0.1 }}
+                    >
                         <h3 className="text-lg font-semibold mb-6">
                             Quick Links
                         </h3>
                         <ul className="space-y-4">
-                            {quickLinks.map((link) => (
-                                <li key={link.name}>
+                            {quickLinks.map((link, index) => (
+                                <motion.li
+                                    key={link.name}
+                                    initial={{ opacity: 0, x: -20 }}
+                                    whileInView={{ opacity: 1, x: 0 }}
+                                    transition={{
+                                        duration: 0.3,
+                                        delay: index * 0.1,
+                                    }}
+                                >
                                     <Link
                                         href={link.href}
-                                        className="text-gray-400 hover:text-white transition-colors"
+                                        className="text-gray-400 hover:text-white transition-all hover:translate-x-1 inline-block"
                                     >
                                         {link.name}
                                     </Link>
-                                </li>
+                                </motion.li>
                             ))}
                         </ul>
-                    </div>
+                    </motion.div>
 
                     {/* Contact Info */}
-                    <div>
+                    <motion.div
+                        initial={{ opacity: 0, y: 20 }}
+                        whileInView={{ opacity: 1, y: 0 }}
+                        transition={{ duration: 0.5, delay: 0.2 }}
+                    >
                         <h3 className="text-lg font-semibold mb-6">
                             Get in Touch
                         </h3>
                         <ul className="space-y-4 text-gray-400">
-                            <li>
+                            <motion.li whileHover={{ x: 2 }}>
                                 <a
                                     href="mailto:thekshitizrai@gmail.com"
-                                    className="hover:text-white transition-colors"
+                                    className="hover:text-white transition-colors inline-flex items-center"
                                 >
+                                    <span className="mr-2">📧</span>
                                     thekshitizrai@gmail.com
                                 </a>
-                            </li>
-                            <li>
+                            </motion.li>
+                            <motion.li whileHover={{ x: 2 }}>
                                 <a
                                     href="tel:+977-9818180198"
-                                    className="hover:text-white transition-colors"
+                                    className="hover:text-white transition-colors inline-flex items-center"
                                 >
+                                    <span className="mr-2">📱</span>
                                     +977-9818180198
                                 </a>
-                            </li>
-                            <li>
-                                Triyuga-10
-                                <br />
-                                Udayapur, Nepal
-                            </li>
+                            </motion.li>
+                            <motion.li whileHover={{ x: 2 }}>
+                                <span className="inline-flex items-center">
+                                    <span className="mr-2">📍</span>
+                                    Triyuga-10
+                                    <br />
+                                    <span className="ml-6">
+                                        Udayapur, Nepal
+                                    </span>
+                                </span>
+                            </motion.li>
                         </ul>
-                    </div>
+                    </motion.div>
 
                     {/* Newsletter */}
-                    <div>
+                    <motion.div
+                        initial={{ opacity: 0, y: 20 }}
+                        whileInView={{ opacity: 1, y: 0 }}
+                        transition={{ duration: 0.5, delay: 0.3 }}
+                    >
                         <h3 className="text-lg font-semibold mb-6">
                             Stay Updated
                         </h3>
@@ -116,21 +151,28 @@ export default function Footer() {
                                 <input
                                     type="email"
                                     placeholder="Enter your email"
-                                    className="flex-1 px-4 py-2 bg-gray-800 border border-gray-700 rounded-l-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+                                    className="flex-1 px-4 py-2 bg-gray-800/50 border border-gray-700 rounded-l-lg focus:outline-none focus:ring-2 focus:ring-blue-500 transition-all"
                                 />
-                                <button
+                                <motion.button
                                     type="submit"
                                     className="px-6 py-2 bg-blue-600 text-white rounded-r-lg hover:bg-blue-700 transition-colors"
+                                    whileHover={{ scale: 1.02 }}
+                                    whileTap={{ scale: 0.98 }}
                                 >
                                     Join
-                                </button>
+                                </motion.button>
                             </div>
                         </form>
-                    </div>
+                    </motion.div>
                 </div>
 
                 {/* Bottom Bar */}
-                <div className="pt-8 mt-8 border-t border-gray-800">
+                <motion.div
+                    className="pt-8 mt-8 border-t border-gray-800"
+                    initial={{ opacity: 0 }}
+                    whileInView={{ opacity: 1 }}
+                    transition={{ duration: 0.5, delay: 0.4 }}
+                >
                     <div className="flex flex-col md:flex-row justify-between items-center">
                         <p className="text-gray-400 text-sm">
                             © {new Date().getFullYear()} Kshitiz. All rights
@@ -149,20 +191,19 @@ export default function Footer() {
                             >
                                 Terms of Service
                             </Link>
-                            <button
+                            <motion.button
                                 onClick={scrollToTop}
                                 className="group flex items-center space-x-2 text-gray-400 hover:text-white transition-colors"
+                                whileHover={{ y: -2 }}
+                                whileTap={{ y: 0 }}
                             >
                                 <span className="text-sm">Back to top</span>
                                 <ArrowUpIcon className="w-5 h-5 group-hover:-translate-y-1 transition-transform" />
-                            </button>
+                            </motion.button>
                         </div>
                     </div>
-                </div>
+                </motion.div>
             </div>
-
-            {/* Animated Border */}
-            <div className="absolute top-0 left-0 right-0 h-px bg-gradient-to-r from-transparent via-gray-500 to-transparent opacity-20" />
         </footer>
     )
 }
