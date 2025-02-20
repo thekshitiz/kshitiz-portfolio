@@ -6,6 +6,7 @@ import { usePathname } from 'next/navigation'
 import { motion, AnimatePresence } from 'framer-motion'
 import { ChevronDownIcon } from '@heroicons/react/24/outline'
 import DarkModeToggle from './DarkModeToggle'
+import { useScrollDirection } from '@/hooks/useScrollDirection'
 
 const navItems = [
     { href: '/#home', label: 'Home' },
@@ -33,6 +34,7 @@ export default function Header() {
     const [openDropdown, setOpenDropdown] = useState<string | null>(null)
     const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false)
     const [activeSection, setActiveSection] = useState<string>('')
+    const isVisible = useScrollDirection()
 
     // Handle navigation and scroll
     const handleClick = (
@@ -108,33 +110,37 @@ export default function Header() {
     }
 
     return (
-        <header className="fixed top-0 left-0 right-0 z-[100] bg-white/70 dark:bg-gray-900/70 backdrop-blur-lg backdrop-saturate-150 border-b border-gray-200/10 dark:border-gray-800/10 supports-[backdrop-filter]:bg-white/50 supports-[backdrop-filter]:dark:bg-gray-900/50">
+        <header 
+            className={`fixed top-0 left-0 right-0 z-[100] bg-white/60 dark:bg-gray-900/60 backdrop-blur-xl backdrop-saturate-200 border-b border-gray-200/5 dark:border-gray-800/5 transition-transform duration-300 ${
+                isVisible ? 'translate-y-0' : '-translate-y-full'
+            }`}
+        >
             <motion.div
                 initial={{ y: -100 }}
                 animate={{ y: 0 }}
                 transition={{
                     type: 'spring',
-                    stiffness: 260,
-                    damping: 20,
+                    stiffness: 300,
+                    damping: 25,
                 }}
             >
-                <nav className="container mx-auto px-6 py-4">
+                <nav className="container mx-auto px-6 py-5">
                     <div className="flex items-center justify-between">
                         <Link
                             href="/"
-                            className="text-xl font-semibold tracking-tight hover:opacity-80 transition-opacity"
+                            className="text-2xl font-bold tracking-tighter hover:opacity-80 transition-opacity bg-clip-text text-transparent bg-gradient-to-r from-gray-900 to-gray-600 dark:from-white dark:to-gray-300"
                         >
                             Kshitiz
                         </Link>
 
                         <div className="flex items-center gap-8">
-                            <div className="hidden md:flex items-center gap-6">
+                            <div className="hidden md:flex items-center gap-8">
                                 {navItems.map((item) => {
                                     if ('dropdownItems' in item) {
                                         return (
                                             <div
                                                 key={item.label}
-                                                className="relative"
+                                                className="relative group"
                                                 onMouseEnter={() =>
                                                     setOpenDropdown(item.label)
                                                 }
@@ -142,9 +148,9 @@ export default function Header() {
                                                     setOpenDropdown(null)
                                                 }
                                             >
-                                                <button className="flex items-center gap-1 py-1.5 px-1 text-sm font-medium text-gray-700 dark:text-gray-300 hover:text-black dark:hover:text-white transition-colors">
+                                                <button className="flex items-center gap-1.5 py-2 px-3 text-sm font-medium text-gray-700 dark:text-gray-300 hover:text-black dark:hover:text-white transition-all group-hover:bg-gray-100/50 dark:group-hover:bg-gray-800/50 rounded-full">
                                                     {item.label}
-                                                    <ChevronDownIcon className="w-4 h-4" />
+                                                    <ChevronDownIcon className="w-4 h-4 transition-transform group-hover:rotate-180" />
                                                 </button>
 
                                                 <AnimatePresence>
@@ -153,7 +159,7 @@ export default function Header() {
                                                         <motion.div
                                                             initial={{
                                                                 opacity: 0,
-                                                                y: 10,
+                                                                y: 8,
                                                             }}
                                                             animate={{
                                                                 opacity: 1,
@@ -161,12 +167,12 @@ export default function Header() {
                                                             }}
                                                             exit={{
                                                                 opacity: 0,
-                                                                y: 10,
+                                                                y: 8,
                                                             }}
                                                             transition={{
-                                                                duration: 0.2,
+                                                                duration: 0.15,
                                                             }}
-                                                            className="absolute top-full -left-2 mt-1 w-48 bg-white dark:bg-gray-800 rounded-lg shadow-lg py-2"
+                                                            className="absolute top-full -left-2 mt-2 w-56 bg-white/80 dark:bg-gray-800/80 backdrop-blur-lg rounded-2xl shadow-lg shadow-black/5 dark:shadow-white/5 border border-gray-200/20 dark:border-gray-700/20 py-2"
                                                         >
                                                             {item.dropdownItems.map(
                                                                 (
@@ -187,9 +193,9 @@ export default function Header() {
                                                                                 dropdownItem.href
                                                                             )
                                                                         }
-                                                                        className="block px-4 py-2 text-sm text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700"
+                                                                        className="block px-4 py-3 text-sm hover:bg-gray-100/50 dark:hover:bg-gray-700/50 transition-colors"
                                                                     >
-                                                                        <span className="block font-medium">
+                                                                        <span className="block font-medium bg-clip-text text-transparent bg-gradient-to-r from-gray-900 to-gray-600 dark:from-white dark:to-gray-300">
                                                                             {
                                                                                 dropdownItem.label
                                                                             }
@@ -219,38 +225,23 @@ export default function Header() {
                                             onClick={(e) =>
                                                 handleClick(e, item.href)
                                             }
-                                            className={`relative py-1.5 px-1 text-sm font-medium text-gray-700 dark:text-gray-300 hover:text-black dark:hover:text-white transition-colors ${
+                                            className={`relative py-2 px-4 text-sm font-medium rounded-full transition-all duration-300 ${
                                                 isActive
-                                                    ? 'text-black dark:text-white'
-                                                    : ''
+                                                    ? 'text-black dark:text-white bg-black/[0.03] dark:bg-white/[0.03]'
+                                                    : 'text-gray-700 dark:text-gray-300 hover:bg-gray-100/50 dark:hover:bg-gray-800/50'
                                             }`}
                                         >
                                             {item.label}
                                             {isActive && (
-                                                <>
-                                                    <motion.span
-                                                        layoutId="activeSection"
-                                                        className="absolute inset-0 bg-black/[0.03] dark:bg-white/[0.03] rounded-lg"
-                                                        initial={{ opacity: 0 }}
-                                                        animate={{ opacity: 1 }}
-                                                        transition={{
-                                                            type: 'spring',
-                                                            stiffness: 380,
-                                                            damping: 30,
-                                                        }}
-                                                    />
-                                                    <motion.span
-                                                        layoutId="activePill"
-                                                        className="absolute -bottom-px left-0 right-0 h-0.5 bg-black dark:bg-white"
-                                                        initial={{ opacity: 0 }}
-                                                        animate={{ opacity: 1 }}
-                                                        transition={{
-                                                            type: 'spring',
-                                                            stiffness: 380,
-                                                            damping: 30,
-                                                        }}
-                                                    />
-                                                </>
+                                                <motion.span
+                                                    layoutId="activePill"
+                                                    className="absolute inset-0 rounded-full bg-gradient-to-r from-gray-100 to-gray-50 dark:from-gray-800 dark:to-gray-900 -z-10"
+                                                    transition={{
+                                                        type: 'spring',
+                                                        stiffness: 380,
+                                                        damping: 30,
+                                                    }}
+                                                />
                                             )}
                                         </Link>
                                     )
@@ -260,48 +251,46 @@ export default function Header() {
                             <div className="flex items-center gap-4">
                                 <Link
                                     href="/resume"
-                                    className="hidden md:inline-flex items-center px-4 py-2 text-sm font-medium text-white bg-black dark:bg-white dark:text-black rounded-lg hover:opacity-90 transition-opacity"
+                                    className="hidden md:inline-flex items-center px-5 py-2 text-sm font-medium text-white bg-gradient-to-r from-gray-900 to-black dark:from-white dark:to-gray-200 dark:text-black rounded-full hover:opacity-90 transition-all duration-300 hover:scale-[1.02]"
                                 >
                                     Resume
                                 </Link>
                                 <DarkModeToggle />
-                            </div>
 
-                            {/* Mobile Menu Button */}
-                            <button
-                                onClick={() =>
-                                    setIsMobileMenuOpen(!isMobileMenuOpen)
-                                }
-                                className="md:hidden p-2 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-800"
-                            >
-                                <span className="sr-only">
-                                    {isMobileMenuOpen
-                                        ? 'Close menu'
-                                        : 'Open menu'}
-                                </span>
-                                <svg
-                                    className="w-5 h-5"
-                                    fill="none"
-                                    stroke="currentColor"
-                                    viewBox="0 0 24 24"
+                                <button
+                                    onClick={() =>
+                                        setIsMobileMenuOpen(!isMobileMenuOpen)
+                                    }
+                                    className="md:hidden p-2 rounded-full hover:bg-gray-100/50 dark:hover:bg-gray-800/50 transition-colors"
                                 >
-                                    <path
-                                        strokeLinecap="round"
-                                        strokeLinejoin="round"
-                                        strokeWidth={2}
-                                        d={
-                                            isMobileMenuOpen
-                                                ? 'M6 18L18 6M6 6l12 12'
-                                                : 'M4 6h16M4 12h16M4 18h16'
-                                        }
-                                    />
-                                </svg>
-                            </button>
+                                    <span className="sr-only">
+                                        {isMobileMenuOpen
+                                            ? 'Close menu'
+                                            : 'Open menu'}
+                                    </span>
+                                    <svg
+                                        className="w-5 h-5"
+                                        fill="none"
+                                        stroke="currentColor"
+                                        viewBox="0 0 24 24"
+                                    >
+                                        <path
+                                            strokeLinecap="round"
+                                            strokeLinejoin="round"
+                                            strokeWidth={2}
+                                            d={
+                                                isMobileMenuOpen
+                                                    ? 'M6 18L18 6M6 6l12 12'
+                                                    : 'M4 6h16M4 12h16M4 18h16'
+                                            }
+                                        />
+                                    </svg>
+                                </button>
+                            </div>
                         </div>
                     </div>
                 </nav>
 
-                {/* Mobile Menu with improved animation */}
                 <AnimatePresence>
                     {isMobileMenuOpen && (
                         <motion.div
@@ -310,30 +299,19 @@ export default function Header() {
                                 height: 'auto',
                                 opacity: 1,
                                 transition: {
-                                    height: {
-                                        duration: 0.4,
-                                        ease: [0.4, 0, 0.2, 1],
-                                    },
-                                    opacity: {
-                                        duration: 0.25,
-                                        delay: 0.15,
-                                    },
+                                    height: { duration: 0.4 },
+                                    opacity: { duration: 0.25, delay: 0.15 },
                                 },
                             }}
                             exit={{
                                 height: 0,
                                 opacity: 0,
                                 transition: {
-                                    height: {
-                                        duration: 0.3,
-                                        ease: [0.4, 0, 0.2, 1],
-                                    },
-                                    opacity: {
-                                        duration: 0.2,
-                                    },
+                                    height: { duration: 0.3 },
+                                    opacity: { duration: 0.2 },
                                 },
                             }}
-                            className="md:hidden overflow-hidden bg-white/90 dark:bg-gray-900/90 backdrop-blur-lg border-b border-gray-200/10 dark:border-gray-800/10"
+                            className="md:hidden overflow-hidden bg-white/80 dark:bg-gray-900/80 backdrop-blur-xl border-t border-gray-200/10 dark:border-gray-800/10"
                         >
                             <motion.div
                                 variants={{
@@ -355,7 +333,8 @@ export default function Header() {
                                 exit="closed"
                                 className="px-6 py-4 space-y-3"
                             >
-                                {navItems.map((item, i) => {
+                                {/* Mobile menu items with updated styling */}
+                                {navItems.map((item) => {
                                     if ('dropdownItems' in item) {
                                         return (
                                             <motion.div
@@ -383,7 +362,7 @@ export default function Header() {
                                                 }}
                                                 className="space-y-2"
                                             >
-                                                <div className="font-medium px-4 py-2">
+                                                <div className="font-medium px-4 py-2 text-transparent bg-clip-text bg-gradient-to-r from-gray-900 to-gray-600 dark:from-white dark:to-gray-300">
                                                     {item.label}
                                                 </div>
                                                 <div className="pl-4 space-y-2">
@@ -396,7 +375,7 @@ export default function Header() {
                                                                 href={
                                                                     dropdownItem.href
                                                                 }
-                                                                className="block py-2 px-4 text-sm rounded-lg hover:bg-gray-100 dark:hover:bg-gray-800"
+                                                                className="block py-2 px-4 text-sm rounded-full hover:bg-gray-100/50 dark:hover:bg-gray-800/50 transition-all duration-200"
                                                                 onClick={() => {
                                                                     handleClick(
                                                                         null,
@@ -448,10 +427,10 @@ export default function Header() {
                                                     handleClick(e, item.href)
                                                     setIsMobileMenuOpen(false)
                                                 }}
-                                                className={`block py-2 px-4 text-sm rounded-lg transition-all duration-200 ${
+                                                className={`block py-2 px-4 text-sm rounded-full transition-all duration-200 ${
                                                     isActive
-                                                        ? 'bg-black/[0.03] dark:bg-white/[0.03] font-medium scale-[1.02]'
-                                                        : 'hover:bg-gray-100 dark:hover:bg-gray-800 hover:scale-[1.02]'
+                                                        ? 'bg-gray-100/50 dark:bg-gray-800/50 font-medium'
+                                                        : 'hover:bg-gray-100/30 dark:hover:bg-gray-800/30'
                                                 }`}
                                             >
                                                 {item.label}
@@ -482,7 +461,7 @@ export default function Header() {
                                 >
                                     <Link
                                         href="/resume"
-                                        className="block py-2 px-4 text-sm font-medium text-center text-white bg-black dark:bg-white dark:text-black rounded-lg hover:opacity-90 transition-all duration-200 hover:scale-[1.02]"
+                                        className="block py-2 px-4 text-sm font-medium text-center text-white bg-gradient-to-r from-gray-900 to-black dark:from-white dark:to-gray-200 dark:text-black rounded-full hover:opacity-90 transition-all duration-200 hover:scale-[1.02]"
                                         onClick={() =>
                                             setIsMobileMenuOpen(false)
                                         }
