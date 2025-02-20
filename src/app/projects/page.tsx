@@ -27,23 +27,35 @@ export default function Projects() {
 
     return (
         <div className="min-h-screen bg-white dark:bg-gray-900">
-            <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-24">
+            <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-24">
+                {/* Header */}
+                <div className="text-center mb-16">
+                    <h1 className="text-4xl font-bold text-gray-900 dark:text-white mb-4">
+                        My Projects
+                    </h1>
+                    <p className="text-lg text-gray-600 dark:text-gray-400 max-w-2xl mx-auto">
+                        A collection of my recent work and personal projects.
+                    </p>
+                </div>
+
                 {/* Search Bar */}
-                <div className="mb-8">
-                    <input
-                        type="text"
-                        placeholder="Search projects..."
-                        value={searchTerm}
-                        onChange={(e) => {
-                            setSearchTerm(e.target.value)
-                            setCurrentPage(1) // Reset to first page on search
-                        }}
-                        className="w-full max-w-md px-4 py-2 rounded-md border border-gray-300 dark:border-gray-700 bg-white dark:bg-gray-800 text-gray-900 dark:text-white focus:ring-2 focus:ring-blue-500 dark:focus:ring-blue-400"
-                    />
+                <div className="mb-12">
+                    <div className="max-w-md mx-auto">
+                        <input
+                            type="text"
+                            placeholder="Search projects..."
+                            value={searchTerm}
+                            onChange={(e) => {
+                                setSearchTerm(e.target.value)
+                                setCurrentPage(1)
+                            }}
+                            className="w-full px-4 py-2 rounded-lg border border-gray-300 dark:border-gray-700 bg-white dark:bg-gray-800 text-gray-900 dark:text-white focus:ring-2 focus:ring-blue-500 dark:focus:ring-blue-400"
+                        />
+                    </div>
                 </div>
 
                 {/* Projects Grid */}
-                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
                     <AnimatePresence mode="popLayout">
                         {currentProjects.map((project) => (
                             <motion.div
@@ -65,23 +77,23 @@ export default function Projects() {
 
                 {/* Pagination */}
                 {totalPages > 1 && (
-                    <div className="mt-8 flex justify-center space-x-2">
+                    <div className="mt-12 flex justify-center space-x-2">
                         {Array.from({ length: totalPages }, (_, i) => (
                             <button
                                 key={i}
                                 onClick={() => setCurrentPage(i + 1)}
                                 className={`px-4 py-2 rounded-md ${
                                     currentPage === i + 1
-                                        ? 'bg-black text-white dark:bg-white dark:text-black'
-                                        : 'bg-gray-200 dark:bg-gray-700'
-                                }`}
+                                        ? 'bg-blue-600 text-white'
+                                        : 'bg-gray-200 dark:bg-gray-700 text-gray-900 dark:text-gray-100'
+                                } hover:opacity-90 transition-opacity`}
                             >
                                 {i + 1}
                             </button>
                         ))}
                     </div>
                 )}
-            </main>
+            </div>
         </div>
     )
 }
