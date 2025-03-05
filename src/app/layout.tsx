@@ -18,6 +18,9 @@ const inter = Inter({
 
 // SEO and social sharing metadata
 export const metadata: Metadata = {
+    metadataBase: new URL(
+        process.env.NEXT_PUBLIC_APP_URL || 'http://localhost:3000'
+    ),
     title: siteConfig.title,
     description: siteConfig.description,
 

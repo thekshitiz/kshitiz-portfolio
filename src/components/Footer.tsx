@@ -1,10 +1,15 @@
 'use client'
 
+import { ReactNode } from 'react'
 import Link from 'next/link'
 import { motion } from 'framer-motion'
 import { ArrowUpIcon } from '@heroicons/react/24/outline'
 
-export default function Footer() {
+interface FooterProps {
+    children?: ReactNode
+}
+
+export default function Footer({ children }: FooterProps) {
     const scrollToTop = () => {
         window.scrollTo({ top: 0, behavior: 'smooth' })
     }
@@ -122,7 +127,6 @@ export default function Footer() {
                                     <span className="mr-2">📍</span>
                                     Udayapur, Nepal
                                     <br />
-                                    
                                 </span>
                             </motion.li>
                         </ul>
@@ -202,6 +206,7 @@ export default function Footer() {
                     </div>
                 </motion.div>
             </div>
+            {children}
         </footer>
     )
 }
