@@ -81,30 +81,20 @@ export default function Contact() {
             message: '',
         })
 
-        // Log the form data before sending
-        console.log('Submitting form data:', formData)
-
         try {
-            const response = await fetch('/api/contact', {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({
-                    name: formData.name,
-                    email: formData.email,
-                    subject:
-                        formData.subject === 'other'
-                            ? formData.customSubject || 'Other'
-                            : subjectTypes.find(
-                                  (type) => type.value === formData.subject
-                              )?.label || formData.subject,
-                    message: formData.message,
-                }),
-            })
-
-            const data = await response.json()
+            const response = await fetch(
+                'https://formspree.io/f/YOUR_FORM_ID',
+                {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify(formData),
+                }
+            )
 
             if (!response.ok) {
-                throw new Error(data.error || 'Failed to send message')
+                throw new Error('Failed to send message')
             }
 
             setStatus({
@@ -127,10 +117,7 @@ export default function Contact() {
                 isSubmitting: false,
                 isSuccess: false,
                 isError: true,
-                message:
-                    error instanceof Error
-                        ? error.message
-                        : 'Failed to send message. Please try again.',
+                message: 'Failed to send message. Please try again.',
             })
         }
     }
@@ -234,7 +221,7 @@ export default function Contact() {
                                                     subject: e.target.value,
                                                 })
                                             }
-                                            className="block w-full pl-10 pr-10 py-3 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:text-white appearance-none bg-white dark:bg-gray-800"
+                                            className="block w-full pl-10 pr-10 py-3 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-800 dark:text-white appearance-none bg-white"
                                             required
                                         >
                                             <option value="">
@@ -286,7 +273,7 @@ export default function Contact() {
                                                             e.target.value,
                                                     })
                                                 }
-                                                className="block w-full pl-10 pr-3 py-3 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:text-white"
+                                                className="block w-full pl-10 pr-3 py-3 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-800 dark:text-white"
                                                 placeholder="Please specify your subject"
                                                 required={
                                                     formData.subject === 'other'
@@ -405,7 +392,6 @@ export default function Contact() {
                                             <p className="text-gray-600 dark:text-gray-400">
                                                 Udayapur, Nepal
                                                 <br />
-                                                
                                             </p>
                                         </div>
                                     </div>

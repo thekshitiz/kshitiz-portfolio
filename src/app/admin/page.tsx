@@ -1,6 +1,6 @@
 'use client'
 
-import { useState, useEffect } from 'react'
+import { useState } from 'react'
 import { motion } from 'framer-motion'
 import {
     UsersIcon,
@@ -71,56 +71,34 @@ interface DashboardStats {
 }
 
 export default function AdminDashboard() {
-    const [stats, setStats] = useState<DashboardStats | null>(null)
-    const [isLoading, setIsLoading] = useState(true)
-
-    useEffect(() => {
-        // Fetch dashboard data
-        const fetchData = async () => {
-            try {
-                // Simulated data for now
-                const mockData: DashboardStats = {
-                    overview: {
-                        totalPosts: 125,
-                        totalViews: 45892,
-                        totalComments: 2341,
-                        engagement: 67,
-                        growth: 12.5,
-                    },
-                    recentActivity: {
-                        posts: [
-                            {
-                                id: '1',
-                                title: 'Getting Started with Next.js',
-                                views: 1234,
-                                likes: 89,
-                                createdAt: new Date().toISOString(),
-                            },
-                            // Add more mock posts...
-                        ],
-                        comments: [],
-                    },
-                    analytics: {
-                        dates: Array.from({ length: 7 }, (_, i) =>
-                            format(
-                                new Date(Date.now() - i * 24 * 60 * 60 * 1000),
-                                'MMM dd'
-                            )
-                        ).reverse(),
-                        views: [1200, 1900, 2100, 2500, 2200, 2800, 3100],
-                        engagement: [65, 72, 68, 75, 70, 78, 82],
-                    },
-                }
-                setStats(mockData)
-            } catch (error) {
-                console.error('Failed to fetch dashboard data:', error)
-            } finally {
-                setIsLoading(false)
-            }
-        }
-
-        fetchData()
-    }, [])
+    const [stats] = useState({
+        overview: {
+            totalPosts: 125,
+            totalViews: 45892,
+            totalComments: 2341,
+            engagement: 67,
+            growth: 12.5,
+        },
+        recentActivity: {
+            posts: [
+                {
+                    id: '1',
+                    title: 'Getting Started with Next.js',
+                    views: 1234,
+                    likes: 89,
+                    createdAt: new Date().toISOString(),
+                },
+            ],
+            comments: [] as any[],
+        },
+        analytics: {
+            dates: Array.from({ length: 7 }, (_, i) =>
+                format(new Date(Date.now() - i * 24 * 60 * 60 * 1000), 'MMM dd')
+            ).reverse(),
+            views: [1200, 1900, 2100, 2500, 2200, 2800, 3100],
+            engagement: [65, 72, 68, 75, 70, 78, 82],
+        },
+    })
 
     const StatCard = ({
         title,
@@ -249,8 +227,13 @@ export default function AdminDashboard() {
                         color: 'rgb(156, 163, 175)',
                         font: {
                             size: 12,
+                            family: 'Inter, sans-serif',
                         },
                     },
+                },
+                tooltip: {
+                    mode: 'index',
+                    intersect: false,
                 },
             },
             scales: {
@@ -278,16 +261,6 @@ export default function AdminDashboard() {
             },
         }
 
-        if (isLoading) {
-            return (
-                <div className="bg-white dark:bg-gray-800 rounded-xl shadow-sm p-6">
-                    <div className="h-[300px] flex items-center justify-center">
-                        <div className="animate-spin rounded-full h-8 w-8 border-2 border-blue-500 border-t-transparent" />
-                    </div>
-                </div>
-            )
-        }
-
         return (
             <div className="bg-white dark:bg-gray-800 rounded-xl shadow-sm p-6">
                 <h3 className="text-lg font-medium text-gray-900 dark:text-white mb-4">
@@ -296,14 +269,6 @@ export default function AdminDashboard() {
                 <div className="h-[300px]">
                     <Line data={chartData} options={chartOptions} />
                 </div>
-            </div>
-        )
-    }
-
-    if (isLoading) {
-        return (
-            <div className="flex items-center justify-center min-h-[60vh]">
-                <div className="animate-spin rounded-full h-12 w-12 border-2 border-blue-500 border-t-transparent" />
             </div>
         )
     }
