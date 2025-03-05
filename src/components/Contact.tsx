@@ -378,7 +378,7 @@ export default function Contact() {
                                                 href="mailto:contact@yourname.com"
                                                 className="text-gray-600 dark:text-gray-400 hover:text-black dark:hover:text-white"
                                             >
-                                                thekshitizrai@gmail.com
+                                                hello@kshitizrai.com.np
                                             </a>
                                         </div>
                                     </div>
@@ -403,11 +403,9 @@ export default function Contact() {
                                                 Address
                                             </p>
                                             <p className="text-gray-600 dark:text-gray-400">
-                                                Triyuga-10,
+                                                Udayapur, Nepal
                                                 <br />
-                                                Udayapur, Koshi 56300,
-                                                <br />
-                                                Nepal
+                                                
                                             </p>
                                         </div>
                                     </div>

@@ -105,7 +105,7 @@ export default function Footer() {
                                     className="hover:text-white transition-colors inline-flex items-center"
                                 >
                                     <span className="mr-2">📧</span>
-                                    thekshitizrai@gmail.com
+                                    hello@kshitizrai.com.np
                                 </a>
                             </motion.li>
                             <motion.li whileHover={{ x: 2 }}>
@@ -120,11 +120,9 @@ export default function Footer() {
                             <motion.li whileHover={{ x: 2 }}>
                                 <span className="inline-flex items-center">
                                     <span className="mr-2">📍</span>
-                                    Triyuga-10
+                                    Udayapur, Nepal
                                     <br />
-                                    <span className="ml-6">
-                                        Udayapur, Nepal
-                                    </span>
+                                    
                                 </span>
                             </motion.li>
                         </ul>
