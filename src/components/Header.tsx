@@ -110,7 +110,7 @@ export default function Header() {
     }
 
     return (
-        <header 
+        <header
             className={`fixed top-0 left-0 right-0 z-[100] bg-white/60 dark:bg-gray-900/60 backdrop-blur-xl backdrop-saturate-200 border-b border-gray-200/5 dark:border-gray-800/5 transition-transform duration-300 ${
                 isVisible ? 'translate-y-0' : '-translate-y-full'
             }`}
@@ -227,15 +227,22 @@ export default function Header() {
                                             }
                                             className={`relative py-2 px-4 text-sm font-medium rounded-full transition-all duration-300 ${
                                                 isActive
-                                                    ? 'text-black dark:text-white bg-black/[0.03] dark:bg-white/[0.03]'
-                                                    : 'text-gray-700 dark:text-gray-300 hover:bg-gray-100/50 dark:hover:bg-gray-800/50'
-                                            }`}
+                                                    ? 'text-black dark:text-white'
+                                                    : 'text-gray-700 dark:text-gray-300 hover:text-black dark:hover:text-white'
+                                            } group`}
                                         >
-                                            {item.label}
+                                            <span className="relative">
+                                                {item.label}
+                                                <span
+                                                    className={`absolute bottom-0 left-0 w-0 h-0.5 bg-black dark:bg-white transition-all duration-300 group-hover:w-full ${
+                                                        isActive ? 'w-full' : ''
+                                                    }`}
+                                                />
+                                            </span>
                                             {isActive && (
                                                 <motion.span
                                                     layoutId="activePill"
-                                                    className="absolute inset-0 rounded-full bg-gradient-to-r from-gray-100 to-gray-50 dark:from-gray-800 dark:to-gray-900 -z-10"
+                                                    className="absolute inset-0 rounded-full bg-gradient-to-r from-gray-100/50 to-gray-50/50 dark:from-gray-800/50 dark:to-gray-900/50 -z-10"
                                                     transition={{
                                                         type: 'spring',
                                                         stiffness: 380,
