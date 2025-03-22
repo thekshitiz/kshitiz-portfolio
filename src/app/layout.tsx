@@ -8,6 +8,7 @@ import { Analytics } from '@/components/Analytics'
 import '@/styles/globals.css'
 import { Metadata } from 'next'
 import { siteConfig } from '@/lib/constants/config'
+import { Suspense } from 'react'
 
 // Configure fonts
 const inter = Inter({
@@ -78,7 +79,9 @@ export default function RootLayout({
             <body className="bg-white dark:bg-gray-900 antialiased">
                 <Providers>
                     <ClientLayout>{children}</ClientLayout>
-                    <Analytics />
+                    <Suspense fallback={null}>
+                        <Analytics />
+                    </Suspense>
                 </Providers>
             </body>
         </html>
