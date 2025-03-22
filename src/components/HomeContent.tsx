@@ -7,16 +7,16 @@ import { SmartLoading } from './SmartLoading'
 import { CodeSplitBoundary } from './CodeSplitBoundary'
 
 // Dynamic imports with loading states
-const Hero = dynamic(() => import('./Hero'), {
+const Hero = dynamic(() => import('./home/Hero'), {
     loading: () => <Loading />,
 })
 
-const About = dynamic(() => import('./About'), {
+const About = dynamic(() => import('./home/About'), {
     loading: () => <Loading />,
     ssr: false,
 })
 
-const Projects = dynamic(() => import('./Projects'), {
+const Projects = dynamic(() => import('./home/Projects'), {
     loading: () => <Loading />,
     ssr: false,
 })
@@ -24,9 +24,9 @@ const Projects = dynamic(() => import('./Projects'), {
 // Dynamically import components that are below the fold
 const Portfolio = dynamic(() => import('./Portfolio'))
 const Skills = dynamic(() => import('./Skills'))
-const Services = dynamic(() => import('./Services'))
-const Testimonials = dynamic(() => import('./Testimonials'))
-const Contact = dynamic(() => import('./Contact'))
+const Services = dynamic(() => import('./home/Services'))
+const Testimonials = dynamic(() => import('./home/Testimonials'))
+const Contact = dynamic(() => import('./home/Contact'))
 
 export function HomeContent() {
     return (
